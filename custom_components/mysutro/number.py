@@ -4,7 +4,7 @@ from homeassistant.components.number import NumberEntity
 from homeassistant.helpers import entity_platform, config_validation as cv
 
 from . import mySutroEntity
-from .const import DOMAIN, PROP_MAP_INV, PROP_MAX
+from .const import DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
