@@ -149,6 +149,7 @@ class mySutroGateway:
     def __init__(self, token) -> None:
         self.token = token
         self.api_endpoint = "https://api.mysutro.com/graphql"
+        self.sutroState = ""
 
     def update(self):
         result_json = self.api_request()
