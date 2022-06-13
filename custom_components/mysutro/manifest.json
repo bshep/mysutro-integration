@@ -1,6 +1,6 @@
 {
     "domain": "mysutro",
-    "name": "mySutro Integratio",
+    "name": "mySutro Integration",
     "config_flow": true,
     "documentation": "",
     "issue_tracker": "",
