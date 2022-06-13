@@ -185,7 +185,7 @@ class mySutroGateway:
         ret = requests.post(
             self.api_endpoint, params=args, timeout=1, data=req_data, headers=req_headers
         )
-        _LOGGER.warning('mySutroGateway 3   ')
+        _LOGGER.warning('mySutroGateway 3  %s ',ret)
 
         ret = ret.json()
         _LOGGER.warning('mySutroGateway - Data %s', ret)
