@@ -163,27 +163,27 @@ class mySutroGateway:
 
         ret = None
 
-        try:
-            req_data = '{"query":"\n      query {\n        me {\n          pool {\n            latestReading {\n              alkalinity\n              bromine\n              chlorine\n              ph\n              minAlkalinity\n              maxAlkalinity\n              readingTime\n              invalidatingTrends\n            }\n}\n        }\n      }\n    "}'
-            req_headers = {
-                "Content-Type": "application/json",
-                "User-Agent": "Sutro/348 CFNetwork/1333.0.4 Darwin/21.5.0",
-                # "Connection": "keep-alive",
-                # "Accept": "*/*",
-                # "Accept-Language": "en-US,en;q=0.9",
-                "Authorization": "Bearer " + self.token
-            }
+        # try:
+        req_data = '{"query":"\n      query {\n        me {\n          pool {\n            latestReading {\n              alkalinity\n              bromine\n              chlorine\n              ph\n              minAlkalinity\n              maxAlkalinity\n              readingTime\n              invalidatingTrends\n            }\n}\n        }\n      }\n    "}'
+        req_headers = {
+            "Content-Type": "application/json",
+            "User-Agent": "Sutro/348 CFNetwork/1333.0.4 Darwin/21.5.0",
+            # "Connection": "keep-alive",
+            # "Accept": "*/*",
+            # "Accept-Language": "en-US,en;q=0.9",
+            "Authorization": "Bearer " + self.token
+        }
 
-            # req = Request('POST', self.api_endpoint, data=req_data, headers=req_headers)
+        # req = Request('POST', self.api_endpoint, data=req_data, headers=req_headers)
 
-            ret = requests.post(
-                self.api_endpoint, params=args, timeout=1, data=req_data, headers=req_headers
-            )
+        ret = requests.post(
+            self.api_endpoint, params=args, timeout=1, data=req_data, headers=req_headers
+        )
 
-            ret = ret.json()
-        except Exception as ex:
-            _LOGGER.error("mySutroGateway - api_request: %s", ex)
-            ret = ""
+        ret = ret.json()
+        # except Exception as ex:
+        #     _LOGGER.error("mySutroGateway - api_request: %s", ex)
+        #     ret = ""
 
         return ret
 
