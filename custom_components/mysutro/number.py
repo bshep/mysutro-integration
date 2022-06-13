@@ -21,7 +21,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
 class mySutroNumber(mySutroEntity, NumberEntity):
     def __init__(self, coordinator, data_key):
-        super().__init__(coordinator, data_key)
+        super().__init__(coordinator, data_key, enabled=True)
         self._attr_min_value = 0
         self._attr_max_value = 200
         self._attr_step = .1
