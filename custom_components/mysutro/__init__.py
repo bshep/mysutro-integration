@@ -83,11 +83,11 @@ class mySutroDataUpdateCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self):
         """Fetch data from the Screenlogic gateway."""
-        try:
-            async with self.api_lock:
-                await self.hass.async_add_executor_job(self.gateway.update)
-        except Exception as error:
-            _LOGGER.warning("mySutroError: %s", error)
+        # try:
+        async with self.api_lock:
+            await self.hass.async_add_executor_job(self.gateway.update)
+        # except Exception as error:
+        #     _LOGGER.warning("mySutroError: %s", error)
 
         return self.gateway.get_data()
 
