@@ -29,10 +29,6 @@ class mySutroNumber(mySutroEntity, NumberEntity):
         self.property_name = data_key
 
     @property
-    def enabled(self) -> Boolean:
-        return True
-
-    @property
     def name(self) -> str:
         return self.property_name
 

@@ -97,6 +97,7 @@ class mySutroEntity(CoordinatorEntity):
         """Initialize of the entity."""
         super().__init__(coordinator)
         self._data_key = data_key
+        self._enabled_default = True
 
     def unload(self):
         return True
