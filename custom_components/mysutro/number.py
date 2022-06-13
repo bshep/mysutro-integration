@@ -1,4 +1,5 @@
 import logging
+from xmlrpc.client import Boolean
 
 from homeassistant.components.number import NumberEntity
 from homeassistant.helpers import entity_platform, config_validation as cv
@@ -21,11 +22,15 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 
 class mySutroNumber(mySutroEntity, NumberEntity):
     def __init__(self, coordinator, data_key):
-        super().__init__(coordinator, data_key, enabled=True)
+        super().__init__(coordinator, data_key)
         self._attr_min_value = 0
         self._attr_max_value = 200
         self._attr_step = .1
         self.property_name = data_key
+
+    @property
+    def enabled(self) -> Boolean:
+        return True
 
     @property
     def name(self) -> str:
