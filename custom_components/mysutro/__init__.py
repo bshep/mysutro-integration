@@ -182,6 +182,7 @@ class mySutroGateway:
         )
 
         ret = ret.json()
+        _LOGGER.warning('mySutroGateway - Data %s', ret)
         # except Exception as ex:
         #     _LOGGER.error("mySutroGateway - api_request: %s", ex)
         #     ret = ""
