@@ -15,7 +15,7 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     entities = []
     coordinator = hass.data[DOMAIN][config_entry.entry_id]["coordinator"]
 
-    entities.append(mySutroNumber(coordinator, 'pH'))
+    entities.append(mySutroNumber(coordinator, 'ph'))
 
     async_add_entities(entities)
 
@@ -39,7 +39,7 @@ class mySutroNumber(mySutroEntity, NumberEntity):
     @property
     def value(self) -> float:
         # return self.gateway.data.me.pool.latestReading
-        return 6.9
+        return self.gateway.data[self.property_name]
 
     @property
     def data_valid(self):
