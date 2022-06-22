@@ -90,7 +90,7 @@ class mySutroDataUpdateCoordinator(DataUpdateCoordinator):
         # except Exception as error:
         #     _LOGGER.warning("mySutroError: %s", error)
 
-        return self.gateway.get_data()
+        return self.gateway.data
 
 
 class mySutroEntity(CoordinatorEntity):
