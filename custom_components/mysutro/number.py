@@ -33,7 +33,7 @@ class mySutroNumber(mySutroEntity, NumberEntity):
 
     @property
     def unique_id(self):
-        return f"{super().unique_id}_{self.property_name}"
+        return f"{super().unique_id}_{self.data_key}"
 
     @property
     def native_value(self) -> float:
