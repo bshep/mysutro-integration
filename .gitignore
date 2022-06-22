@@ -134,3 +134,5 @@ tmp_cache
 .ropeproject
 
 passwords.txt
+custom_components/scripts/authFile
+custom_components/scripts/data

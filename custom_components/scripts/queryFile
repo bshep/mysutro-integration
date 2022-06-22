@@ -1,0 +1,18 @@
+{"query":"
+      query {
+        me {
+          pool {
+            latestReading {
+              alkalinity
+              bromine
+              chlorine
+              ph
+              minAlkalinity
+              maxAlkalinity
+              readingTime
+              invalidatingTrends
+            }
+}
+        }
+      }
+    "}
