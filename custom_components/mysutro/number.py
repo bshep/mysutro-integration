@@ -29,7 +29,7 @@ class mySutroNumber(mySutroEntity, NumberEntity):
 
     @property
     def name(self) -> str:
-        return self.property_name
+        return self._data_key
 
     @property
     def unique_id(self):
