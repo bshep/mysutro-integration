@@ -22,7 +22,7 @@ from .gateway import *
 
 _LOGGER = logging.getLogger(__name__)
 
-PLATFORMS = ["number"]
+PLATFORMS = ["sensor"]
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -60,7 +60,7 @@ async def async_update_listener(hass: HomeAssistant, entry: ConfigEntry):
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
 
-    await hass.config_entries.async_forward_entry_unload(entry, "number")
+    await hass.config_entries.async_forward_entry_unload(entry, "sensor")
 
     hass.data[DOMAIN].pop(entry.entry_id)
 

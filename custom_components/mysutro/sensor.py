@@ -1,7 +1,7 @@
 import logging
 from xmlrpc.client import Boolean
 
-from homeassistant.components.number import NumberEntity
+from homeassistant.components.sensor import SensorEntity
 from homeassistant.helpers import entity_platform, config_validation as cv
 
 from . import mySutroEntity
@@ -15,19 +15,20 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     entities = []
     coordinator = hass.data[DOMAIN][config_entry.entry_id]["coordinator"]
 
-    entities.append(mySutroNumber(coordinator, 'ph'))
-    entities.append(mySutroNumber(coordinator, 'chlorine'))
-    entities.append(mySutroNumber(coordinator, 'alkalinity'))
+    entities.append(mySutroSensor(coordinator, 'ph'))
+    entities.append(mySutroSensor(coordinator, 'chlorine'))
+    entities.append(mySutroSensor(coordinator, 'alkalinity'))
 
     async_add_entities(entities)
 
 
-class mySutroNumber(mySutroEntity, NumberEntity):
+class mySutroSensor(mySutroEntity, SensorEntity):
     def __init__(self, coordinator, data_key):
         super().__init__(coordinator, data_key)
         self.native_min_value = PROP_MAP[data_key]['min']
         self.native_max_value = PROP_MAP[data_key]['max']
         self.native_step = PROP_MAP[data_key]['step']
+        self.state_class = 'measurement'
 
     @property
     def name(self) -> str:
@@ -39,6 +40,11 @@ class mySutroNumber(mySutroEntity, NumberEntity):
 
     @property
     def value(self) -> float:
+        # return self.gateway.data.me.pool.latestReading
+        return self.gateway.data[self._data_key]
+
+    @property
+    def native_value(self) -> float:
         # return self.gateway.data.me.pool.latestReading
         return self.gateway.data[self._data_key]
 
