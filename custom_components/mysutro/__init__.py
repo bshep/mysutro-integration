@@ -124,12 +124,12 @@ class mySutroEntity(CoordinatorEntity):
         return self.coordinator.data["config"]
 
     @property
-    def gateway(self):
+    def gateway(self) -> mySutroGateway:
         """Return the gateway."""
         return self.coordinator.gateway
 
     @property
-    def gateway_name(self):
+    def gateway_name(self) -> str:
         """Return the configured name of the gateway."""
         return self.gateway.name
 

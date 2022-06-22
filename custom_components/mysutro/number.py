@@ -39,7 +39,7 @@ class mySutroNumber(mySutroEntity, NumberEntity):
     @property
     def value(self) -> float:
         # return self.gateway.data.me.pool.latestReading
-        return self.gateway.data[self.property_name]
+        return self.gateway.get_data[self.property_name]
 
     @property
     def data_valid(self):
