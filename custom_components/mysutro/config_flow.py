@@ -10,7 +10,6 @@ from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
-import homeassistant.helpers.config_validation as cv
 
 from .const import DOMAIN
 
@@ -21,7 +20,7 @@ _LOGGER = logging.getLogger(__name__)
 # TODO adjust the data schema to the data that you need
 STEP_USER_DATA_SCHEMA = vol.Schema(
     {
-        vol.Required("token"): cv.string,
+        vol.Required("token"): str,
     }
 )
 
@@ -68,7 +67,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         """Handle the initial step."""
         if user_input is None:
             return self.async_show_form(
-                step_id="user", data_schema=STEP_USER_DATA_SCHEMA, description_placeholders={"token":"Imput API Token Here"}
+                step_id="user", data_schema=STEP_USER_DATA_SCHEMA
             )
 
         errors = {}
@@ -86,7 +85,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
             return self.async_create_entry(title=info["title"], data=user_input)
 
         return self.async_show_form(
-            step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors, description_placeholders={"token":"Imput API Token Here"}
+            step_id="user", data_schema=STEP_USER_DATA_SCHEMA, errors=errors
         )
 
 
