@@ -33,12 +33,12 @@ class mySutroNumber(mySutroEntity, NumberEntity):
 
     @property
     def unique_id(self):
-        return f"{super().unique_id}_{self.data_key}"
+        return f"{super().unique_id}_{self._data_key}"
 
     @property
     def native_value(self) -> float:
         # return self.gateway.data.me.pool.latestReading
-        return self.gateway.data[self.data_key]
+        return self.gateway.data[self._data_key]
 
     @property
     def data_valid(self):
