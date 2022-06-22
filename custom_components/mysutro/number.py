@@ -5,7 +5,7 @@ from homeassistant.components.number import NumberEntity
 from homeassistant.helpers import entity_platform, config_validation as cv
 
 from . import mySutroEntity
-from .const import DOMAIN
+from .const import DOMAIN, PROP_MAP
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -23,10 +23,9 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 class mySutroNumber(mySutroEntity, NumberEntity):
     def __init__(self, coordinator, data_key):
         super().__init__(coordinator, data_key)
-        self._attr_min_value = 0
-        self._attr_max_value = 200
-        self._attr_step = .1
-        self.property_name = data_key
+        self.native_min_value = PROP_MAP[data_key]['min']
+        self.native_max_value = PROP_MAP[data_key]['max']
+        self.native_step = PROP_MAP[data_key]['step']
 
     @property
     def name(self) -> str:
@@ -37,9 +36,9 @@ class mySutroNumber(mySutroEntity, NumberEntity):
         return f"{super().unique_id}_{self.property_name}"
 
     @property
-    def value(self) -> float:
+    def native_value(self) -> float:
         # return self.gateway.data.me.pool.latestReading
-        return self.gateway.get_data[self.property_name]
+        return self.gateway.data[self.data_key]
 
     @property
     def data_valid(self):

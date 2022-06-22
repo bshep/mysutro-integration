@@ -18,7 +18,7 @@ class mySutroGateway:
             self.sutroState = result_json['data']['me']['pool']['latestReading']
 
     def api_request(self) -> str:
-        _LOGGER.warning('mySutroGateway 0')
+        # _LOGGER.warning('mySutroGateway 0')
 
         args = {}
 
@@ -53,7 +53,8 @@ class mySutroGateway:
 
         return ret
 
-    def get_data(self):
+    @property
+    def data(self):
         return self.sutroState
 
     @property
