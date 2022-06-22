@@ -28,7 +28,7 @@ class mySutroSensor(mySutroEntity, SensorEntity):
         self.native_min_value = PROP_MAP[data_key]['min']
         self.native_max_value = PROP_MAP[data_key]['max']
         self.native_step = PROP_MAP[data_key]['step']
-        self.state_class = 'measurement'
+        self._attr_state_class = 'measurement'
 
     @property
     def name(self) -> str:
