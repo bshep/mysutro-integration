@@ -4,6 +4,10 @@ from email import header
 from typing import Sequence
 from urllib.request import Request
 
+from datetime import timedelta
+import logging
+import asyncio
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers import device_registry as dr
 from homeassistant.core import HomeAssistant
@@ -14,10 +18,6 @@ from homeassistant.helpers.update_coordinator import (
 )
 from .const import DOMAIN
 
-from datetime import timedelta
-import logging
-import asyncio
-
 from .gateway import *
 
 _LOGGER = logging.getLogger(__name__)
@@ -27,7 +27,6 @@ PLATFORMS = ["sensor"]
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up House Audio Amplifier from a config entry."""
-    # TODO Store an API object for your platforms to access
     # hass.data[DOMAIN][entry.entry_id] = MyApi(...)
     hass.data[DOMAIN] = {}
     api_lock = asyncio.Lock()
@@ -68,6 +67,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 
 class mySutroDataUpdateCoordinator(DataUpdateCoordinator):
+    """ Update Coordinator for the integration """
     def __init__(self, hass, *, gateway, config_entry, api_lock):
         """Initialize the mySutro Data Update Coordinator."""
         self.config_entry = config_entry
@@ -94,6 +94,7 @@ class mySutroDataUpdateCoordinator(DataUpdateCoordinator):
 
 
 class mySutroEntity(CoordinatorEntity):
+    """ Represents the Sutro Device """
     def __init__(self, coordinator, data_key):
         """Initialize of the entity."""
         super().__init__(coordinator)
@@ -101,6 +102,7 @@ class mySutroEntity(CoordinatorEntity):
         self._enabled_default = True
 
     def unload(self):
+        """ Unloads the integration """
         return True
 
     @property
@@ -145,5 +147,3 @@ class mySutroEntity(CoordinatorEntity):
 
 
 # curl -H 'Content-Type: application/json' -H 'User-Agent: Sutro/348 CFNetwork/1333.0.4 Darwin/21.5.0' -H --compressed -H 'Authorization: Bearer ***REMOVED***' -X POST https://api.mysutro.com/graphql -d '{"query":"\n      query {\n        me {\n          pool {\n            latestReading {\n              alkalinity\n              bromine\n              chlorine\n              ph\n              minAlkalinity\n              maxAlkalinity\n              readingTime\n              invalidatingTrends\n            }\n}\n        }\n      }\n    "}'
-
-

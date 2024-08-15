@@ -136,3 +136,6 @@ tmp_cache
 passwords.txt
 custom_components/scripts/authFile
 custom_components/scripts/data
+custom_components/scripts/ftl-editor-log.txt
+custom_components/scripts/ftl-editor.cfg
+custom_components/scripts/pf.conf

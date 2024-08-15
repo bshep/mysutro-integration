@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, cast
+from typing import Any
 
 import voluptuous as vol
 
@@ -17,7 +17,6 @@ from . import mySutroGateway
 
 _LOGGER = logging.getLogger(__name__)
 
-# TODO adjust the data schema to the data that you need
 STEP_USER_DATA_SCHEMA = vol.Schema(
     {
         vol.Required("token"): str,
@@ -37,6 +36,8 @@ class PlaceholderHub:
 
     async def authenticate(self, username: str, password: str) -> bool:
         """Test if we can authenticate with the host."""
+        if username and password:
+            pass
         return True
 
 
@@ -50,7 +51,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
 
     ret = await hass.async_add_executor_job(gw.api_request)
 
-    if ret == None:
+    if ret is None:
         raise CannotConnect
 
     return {"title": "mySutro Service"}
