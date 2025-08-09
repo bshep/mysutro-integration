@@ -4,15 +4,16 @@
     "config_flow": true,
     "documentation": "https://github.com/bshep/mysutro-integration",
     "issue_tracker": "https://github.com/bshep/mysutro-integration/issues",
-    "requirements": [ "websocket-client==1.2.0"],
+    "requirements": [
+        "websocket-client==1.2.0"
+    ],
     "ssdp": [],
     "zeroconf": [],
     "homekit": {},
     "dependencies": [],
     "codeowners": [
-      "@bshep"
+        "@bshep"
     ],
     "iot_class": "local_polling",
-    "version": "0.0.1"
-  }
-  
+    "version": "0.0.2"
+}
