@@ -11,12 +11,11 @@ from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import callback
 
 from .const import DOMAIN, API_ENDPOINT, USER_AGENT, CONTENT_TYPE, INTEGRATION_TITLE, ERROR_CANNOT_CONNECT, ERROR_INVALID_AUTH, ERROR_UNKNOWN, DEFAULT_UPDATE_INTERVAL, MIN_UPDATE_INTERVAL
 class MySutroOptionsFlowHandler(config_entries.OptionsFlow):
-    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
-        self.config_entry = config_entry
-
     async def async_step_init(self, user_input: dict[str, Any] | None = None) -> FlowResult:
         if user_input is not None:
             # Validate credentials and update entry
@@ -136,13 +135,13 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    @staticmethod
-    def async_get_options_flow(config_entry):
-        return MySutroOptionsFlowHandler(config_entry)
     """Handle a config flow for MySutro Integration."""
-
     VERSION = 1
 
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry: ConfigEntry) -> MySutroOptionsFlowHandler:
+        return MySutroOptionsFlowHandler()
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
