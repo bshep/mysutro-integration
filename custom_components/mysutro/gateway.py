@@ -41,7 +41,7 @@ class MySutroGateway:
             str: The result from the query as JSON
         """
         args = {}
-        req_data = """{\"query\":\"query { me { pool { latestReading { alkalinity bromine chlorine ph minAlkalinity maxAlkalinity readingTime invalidatingTrends }} } } \"}"""
+        req_data = "{\"query\":\"query { me { pool { latestReading { alkalinity bromine chlorine ph minAlkalinity maxAlkalinity readingTime invalidatingTrends }} } } \"}"
         req_headers = {
             "Content-Type": "application/json",
             "User-Agent": "Sutro/348 CFNetwork/1333.0.4 Darwin/21.5.0",
