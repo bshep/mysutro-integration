@@ -5,7 +5,7 @@
     "documentation": "https://github.com/bshep/mysutro-integration",
     "issue_tracker": "https://github.com/bshep/mysutro-integration/issues",
     "requirements": [
-        "websocket-client==1.2.0"
+        "websocket-client"
     ],
     "ssdp": [],
     "zeroconf": [],
