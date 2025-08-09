@@ -43,10 +43,27 @@ def get_token(username: str, password: str) -> str:
         },
         "query": "mutation ($email: String!, $password: String!) { login(email: $email, password: $password) { user { firstName lastName email phone releaseGroup __typename } token __typename } }"
     }
-    resp = requests.post(url, json=payload, headers=headers, timeout=10)
-    resp.raise_for_status()
-    data = resp.json()
-    token = data.get("data", {}).get("login", {}).get("token")
+
+    try:
+        _LOGGER.info("Sending login request to Sutro API")
+        resp = requests.post(url, json=payload, headers=headers, timeout=10)
+        resp.raise_for_status()
+        _LOGGER.info("Login request successful, parsing response")
+        data = resp.json()
+        token = data.get("data", {}).get("login", {}).get("token")
+    except requests.RequestException as ex:
+        _LOGGER.error("Failed to connect to Sutro API: %s", ex)
+        raise CannotConnect from ex
+    except ValueError as ex:
+        _LOGGER.error("Failed to parse response from Sutro API: %s", ex)
+        raise InvalidAuth("Invalid response from Sutro API") from ex
+    except KeyError as ex:
+        _LOGGER.error("Unexpected response structure from Sutro API: %s", ex)
+        raise InvalidAuth("Unexpected response structure from Sutro API") from ex
+    except Exception as ex:
+        _LOGGER.exception("Unexpected error while retrieving token: %s", ex)
+        raise InvalidAuth("Unexpected error while retrieving token") from ex
+
     if not token:
         raise InvalidAuth("No token returned from Sutro API")
     return token
@@ -54,6 +71,7 @@ def get_token(username: str, password: str) -> str:
 async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str, Any]:
     """Validate the user input allows us to connect and retrieve a token."""
     try:
+        _LOGGER.info("Attempting to retrieve token for user: %s", data["username"])
         token = await hass.async_add_executor_job(get_token, data["username"], data["password"])
     except Exception as ex:
         _LOGGER.error("Failed to retrieve token: %s", ex)
