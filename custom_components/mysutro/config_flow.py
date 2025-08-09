@@ -12,7 +12,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
 
-from .const import DOMAIN
+from .const import DOMAIN, API_ENDPOINT, USER_AGENT, CONTENT_TYPE, INTEGRATION_TITLE, ERROR_CANNOT_CONNECT, ERROR_INVALID_AUTH, ERROR_UNKNOWN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -25,10 +25,10 @@ STEP_USER_DATA_SCHEMA = vol.Schema(
 
 def get_token(username: str, password: str) -> str:
     """Perform the login mutation to retrieve a token from the Sutro API."""
-    url = "https://api.mysutro.com/graphql"
+    url = API_ENDPOINT
     headers = {
-        "Content-Type": "application/json",
-        "User-Agent": "Sutro/348 CFNetwork/1333.0.4 Darwin/21.5.0",
+        "Content-Type": CONTENT_TYPE,
+        "User-Agent": USER_AGENT,
         "Accept": "*/*",
         "Accept-Language": "en-US,en;q=0.9",
         "Connection": "keep-alive",
@@ -76,7 +76,7 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
     except Exception as ex:
         _LOGGER.error("Failed to retrieve token: %s", ex)
         raise CannotConnect from ex
-    return {"title": "mySutro Service", "token": token}
+    return {"title": INTEGRATION_TITLE, "token": token}
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
@@ -99,12 +99,12 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         try:
             info = await validate_input(self.hass, user_input)
         except CannotConnect:
-            errors["base"] = "cannot_connect"
+            errors["base"] = ERROR_CANNOT_CONNECT
         except InvalidAuth:
-            errors["base"] = "invalid_auth"
+            errors["base"] = ERROR_INVALID_AUTH
         except Exception:  # pylint: disable=broad-except
             _LOGGER.exception("Unexpected exception")
-            errors["base"] = "unknown"
+            errors["base"] = ERROR_UNKNOWN
         else:
             # Save the username, password and token in the config entry
             entry_data = {

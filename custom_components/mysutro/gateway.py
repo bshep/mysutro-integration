@@ -1,8 +1,10 @@
 """" Defines the gateway class for the sutro device """
 
+
 from typing import Any
 import logging
 import requests
+from .const import API_ENDPOINT, USER_AGENT, CONTENT_TYPE, INTEGRATION_NAME, API_TIMEOUT
 
 
 _LOGGER = logging.getLogger(__name__)
@@ -17,7 +19,7 @@ class MySutroGateway:
     """
     def __init__(self, token: str) -> None:
         self.token = token
-        self.api_endpoint = "https://api.mysutro.com/graphql"
+        self.api_endpoint = API_ENDPOINT
         self.sutro_state = ""
         _LOGGER.debug("Initialized MySutroGateway with token: %s", token[:6] + "..." if token else None)
 
@@ -41,16 +43,42 @@ class MySutroGateway:
             str: The result from the query as JSON
         """
         args = {}
-        req_data = "{\"query\":\"query { me { pool { latestReading { alkalinity bromine chlorine ph minAlkalinity maxAlkalinity readingTime invalidatingTrends }} } } \"}"
+        req_data = """
+        {
+            "query": "query { 
+                me { 
+                    pool { 
+                        latestReading { 
+                            alkalinity 
+                            bromine 
+                            chlorine 
+                            ph 
+                            minAlkalinity 
+                            maxAlkalinity 
+                            readingTime 
+                            invalidatingTrends 
+                        } 
+                    } 
+                } 
+            }"
+        }
+        """.replace("\n", "").replace("  ", "")
         req_headers = {
-            "Content-Type": "application/json",
-            "User-Agent": "Sutro/348 CFNetwork/1333.0.4 Darwin/21.5.0",
+            "Content-Type": CONTENT_TYPE,
+            "User-Agent": USER_AGENT,
             "Authorization": "Bearer " + self.token
         }
-        _LOGGER.debug("Sending POST to %s with headers: %s and data: %s", self.api_endpoint, req_headers, req_data)
+        _LOGGER.debug("Sending POST to %s with headers: %s and data: %s",
+                        self.api_endpoint,
+                        req_headers,
+                        req_data)
         try:
             ret = requests.post(
-                self.api_endpoint, params=args, timeout=1, data=req_data, headers=req_headers
+                self.api_endpoint,
+                params=args,
+                timeout=API_TIMEOUT,
+                data=req_data,
+                headers=req_headers
             )
             ret.raise_for_status()
             ret_json = ret.json()
@@ -69,4 +97,4 @@ class MySutroGateway:
     @property
     def name(self) -> str:
         """ Returns the name of the integration """
-        return "mySutro Gateway"
+        return INTEGRATION_NAME

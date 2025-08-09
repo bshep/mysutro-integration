@@ -25,10 +25,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_e
         _LOGGER.error("Coordinator not found for entry %s", entry.entry_id)
         return
 
-    entities.append(MySutroSensor(coordinator, 'ph'))
-    entities.append(MySutroSensor(coordinator, 'chlorine'))
-    entities.append(MySutroSensor(coordinator, 'alkalinity'))
-    entities.append(MySutroSensor(coordinator, 'bromine'))
+
+    # Use keys from PROP_MAP for sensor creation
+    for key in PROP_MAP:
+        entities.append(MySutroSensor(coordinator, key))
 
     entities.append(MySutroTimeStamp(coordinator, 'readingTime'))
 
