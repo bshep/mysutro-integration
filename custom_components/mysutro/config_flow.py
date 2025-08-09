@@ -12,7 +12,63 @@ from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.exceptions import HomeAssistantError
 
-from .const import DOMAIN, API_ENDPOINT, USER_AGENT, CONTENT_TYPE, INTEGRATION_TITLE, ERROR_CANNOT_CONNECT, ERROR_INVALID_AUTH, ERROR_UNKNOWN
+from .const import DOMAIN, API_ENDPOINT, USER_AGENT, CONTENT_TYPE, INTEGRATION_TITLE, ERROR_CANNOT_CONNECT, ERROR_INVALID_AUTH, ERROR_UNKNOWN, DEFAULT_UPDATE_INTERVAL, MIN_UPDATE_INTERVAL
+class MySutroOptionsFlowHandler(config_entries.OptionsFlow):
+    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
+        self.config_entry = config_entry
+
+    async def async_step_init(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+        if user_input is not None:
+            # Validate credentials and update entry
+            try:
+                hass = self.config_entry.hass
+                info = await validate_input(hass, user_input)
+            except CannotConnect:
+                return self.async_show_form(
+                    step_id="init",
+                    data_schema=self._get_schema(user_input),
+                    errors={"base": ERROR_CANNOT_CONNECT},
+                )
+            except InvalidAuth:
+                return self.async_show_form(
+                    step_id="init",
+                    data_schema=self._get_schema(user_input),
+                    errors={"base": ERROR_INVALID_AUTH},
+                )
+            except Exception:
+                _LOGGER.exception("Unexpected exception in options flow")
+                return self.async_show_form(
+                    step_id="init",
+                    data_schema=self._get_schema(user_input),
+                    errors={"base": ERROR_UNKNOWN},
+                )
+            # Save new credentials, token, and update interval
+            data = dict(self.config_entry.data)
+            data.update({
+                "username": user_input["username"],
+                "password": user_input["password"],
+                "token": info["token"],
+            })
+            options = dict(self.config_entry.options)
+            options["update_interval"] = user_input["update_interval"]
+            return self.async_create_entry(title="", data=options)
+
+        # Show form with current values as defaults
+        defaults = self.config_entry.data
+        options = self.config_entry.options
+        schema = self._get_schema({
+            "username": defaults.get("username", ""),
+            "password": defaults.get("password", ""),
+            "update_interval": options.get("update_interval", DEFAULT_UPDATE_INTERVAL),
+        })
+        return self.async_show_form(step_id="init", data_schema=schema)
+
+    def _get_schema(self, user_input):
+        return vol.Schema({
+            vol.Required("username", default=user_input.get("username", "")): str,
+            vol.Required("password", default=user_input.get("password", "")): str,
+            vol.Required("update_interval", default=user_input.get("update_interval", DEFAULT_UPDATE_INTERVAL)): vol.All(int, vol.Range(min=MIN_UPDATE_INTERVAL, max=3600)),
+        })
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -80,7 +136,10 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for House Audio Amplifier."""
+    @staticmethod
+    def async_get_options_flow(config_entry):
+        return MySutroOptionsFlowHandler(config_entry)
+    """Handle a config flow for MySutro Integration."""
 
     VERSION = 1
 

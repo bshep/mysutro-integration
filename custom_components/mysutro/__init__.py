@@ -74,7 +74,10 @@ class MySutroDataUpdateCoordinator(DataUpdateCoordinator):
         self.api_lock = api_lock
         self.gateway = gateway
 
-        interval = timedelta(seconds=5)
+        # Get update interval from options or use default
+        options = getattr(config_entry, "options", {}) or {}
+        update_interval = int(options.get("update_interval", 30))
+        interval = timedelta(seconds=update_interval)
         super().__init__(
             hass,
             _LOGGER,
