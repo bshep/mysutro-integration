@@ -62,7 +62,54 @@ async def validate_input(hass: HomeAssistant, data: dict[str, Any]) -> dict[str,
 
 
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for House Audio Amplifier."""
+    @staticmethod
+    def async_get_options_flow(config_entry):
+        return MySutroOptionsFlowHandler(config_entry)
+class MySutroOptionsFlowHandler(config_entries.OptionsFlow):
+    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
+        self.config_entry = config_entry
+
+    async def async_step_init(self, user_input: dict[str, Any] | None = None) -> FlowResult:
+        if user_input is not None:
+            # Validate credentials and update entry
+            try:
+                hass = self.config_entry.hass
+                info = await validate_input(hass, user_input)
+            except CannotConnect:
+                return self.async_show_form(
+                    step_id="init",
+                    data_schema=STEP_USER_DATA_SCHEMA,
+                    errors={"base": "cannot_connect"},
+                )
+            except InvalidAuth:
+                return self.async_show_form(
+                    step_id="init",
+                    data_schema=STEP_USER_DATA_SCHEMA,
+                    errors={"base": "invalid_auth"},
+                )
+            except Exception:
+                _LOGGER.exception("Unexpected exception in options flow")
+                return self.async_show_form(
+                    step_id="init",
+                    data_schema=STEP_USER_DATA_SCHEMA,
+                    errors={"base": "unknown"},
+                )
+            # Save new credentials and token
+            self.config_entry.data.update({
+                "username": user_input["username"],
+                "password": user_input["password"],
+                "token": info["token"],
+            })
+            return self.async_create_entry(title="", data={})
+
+        # Show form with current values as defaults
+        defaults = self.config_entry.data
+        schema = vol.Schema({
+            vol.Required("username", default=defaults.get("username", "")): str,
+            vol.Required("password", default=defaults.get("password", "")): str,
+        })
+        return self.async_show_form(step_id="init", data_schema=schema)
+    """Handle a config flow for MySutro Integration."""
 
     VERSION = 1
 
