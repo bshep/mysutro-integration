@@ -31,9 +31,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data[DOMAIN] = {}
     api_lock = asyncio.Lock()
 
-    gateway = mySutroGateway(entry.data["token"])
+    gateway = MySutroGateway(entry.data["token"])
 
-    coordinator = mySutroDataUpdateCoordinator(
+    coordinator = MySutroDataUpdateCoordinator(
         hass,
         config_entry=entry,
         gateway=gateway,
@@ -66,7 +66,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return True
 
 
-class mySutroDataUpdateCoordinator(DataUpdateCoordinator):
+class MySutroDataUpdateCoordinator(DataUpdateCoordinator):
     """ Update Coordinator for the integration """
     def __init__(self, hass, *, gateway, config_entry, api_lock):
         """Initialize the mySutro Data Update Coordinator."""
@@ -93,7 +93,7 @@ class mySutroDataUpdateCoordinator(DataUpdateCoordinator):
         return self.gateway.data
 
 
-class mySutroEntity(CoordinatorEntity):
+class MySutroEntity(CoordinatorEntity):
     """ Represents the Sutro Device """
     def __init__(self, coordinator, data_key):
         """Initialize of the entity."""
@@ -126,7 +126,7 @@ class mySutroEntity(CoordinatorEntity):
         return self.coordinator.data["config"]
 
     @property
-    def gateway(self) -> mySutroGateway:
+    def gateway(self) -> MySutroGateway:
         """Return the gateway."""
         return self.coordinator.gateway
 
@@ -144,6 +144,3 @@ class mySutroEntity(CoordinatorEntity):
             "manufacturer": "Sutro",
             "model": "0001",
         }
-
-
-# curl -H 'Content-Type: application/json' -H 'User-Agent: Sutro/348 CFNetwork/1333.0.4 Darwin/21.5.0' -H --compressed -H 'Authorization: Bearer ***REMOVED***' -X POST https://api.mysutro.com/graphql -d '{"query":"\n      query {\n        me {\n          pool {\n            latestReading {\n              alkalinity\n              bromine\n              chlorine\n              ph\n              minAlkalinity\n              maxAlkalinity\n              readingTime\n              invalidatingTrends\n            }\n}\n        }\n      }\n    "}'

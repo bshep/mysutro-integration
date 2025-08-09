@@ -1,35 +1,43 @@
 """ Represents a sensor entity for the Sutro device """
 
+
 import datetime
 import logging
-
+from typing import Any
 from homeassistant.components.sensor import SensorEntity, SensorDeviceClass
+from homeassistant.core import HomeAssistant
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 import dateutil.parser
-from . import mySutroEntity
+from . import MySutroEntity
 from .const import DOMAIN, PROP_MAP
 
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass, config_entry, async_add_entities):
+async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddConfigEntryEntitiesCallback) -> None: # pylint: disable=line-too-long
     """Set up entry."""
     entities = []
-    coordinator = hass.data[DOMAIN][config_entry.entry_id]["coordinator"]
+    coordinator = hass.data.get(DOMAIN, {}).get(entry.entry_id, {}).get("coordinator")
+    if not coordinator:
+        _LOGGER.error("Coordinator not found for entry %s", entry.entry_id)
+        return
 
-    entities.append(mySutroSensor(coordinator, 'ph'))
-    entities.append(mySutroSensor(coordinator, 'chlorine'))
-    entities.append(mySutroSensor(coordinator, 'alkalinity'))
-    entities.append(mySutroSensor(coordinator, 'bromine'))
+    entities.append(MySutroSensor(coordinator, 'ph'))
+    entities.append(MySutroSensor(coordinator, 'chlorine'))
+    entities.append(MySutroSensor(coordinator, 'alkalinity'))
+    entities.append(MySutroSensor(coordinator, 'bromine'))
 
-    entities.append(mySutroTimeStamp(coordinator, 'readingTime'))
+    entities.append(MySutroTimeStamp(coordinator, 'readingTime'))
 
     async_add_entities(entities)
 
 
-class mySutroSensor(mySutroEntity, SensorEntity):
+class MySutroSensor(MySutroEntity, SensorEntity):
     """ Represents a sutro sensor """
-    def __init__(self, coordinator, data_key):
+    def __init__(self, coordinator: DataUpdateCoordinator, data_key: str) -> None:
         super().__init__(coordinator, data_key)
         self.native_min_value = PROP_MAP[data_key]['min']
         self.native_max_value = PROP_MAP[data_key]['max']
@@ -41,7 +49,7 @@ class mySutroSensor(mySutroEntity, SensorEntity):
         return self._data_key
 
     @property
-    def unique_id(self):
+    def unique_id(self) -> str:
         return f"{super().unique_id}_{self._data_key}"
 
     @property
@@ -56,14 +64,14 @@ class mySutroSensor(mySutroEntity, SensorEntity):
         return self.gateway.data[self._data_key]
 
     @property
-    def data_valid(self):
+    def data_valid(self) -> bool:
         """ Returns true is data is valid, always true """
         return True
 
 
-class mySutroTimeStamp(mySutroEntity, SensorEntity):
+class MySutroTimeStamp(MySutroEntity, SensorEntity):
     """ Represents a timestamp """
-    def __init__(self, coordinator, data_key):
+    def __init__(self, coordinator: Any, data_key: str) -> None:
         super().__init__(coordinator, data_key)
         # self._attr_state_class = 'measurement'
         self._attr_device_class = SensorDeviceClass.TIMESTAMP
@@ -73,14 +81,12 @@ class mySutroTimeStamp(mySutroEntity, SensorEntity):
         return self._data_key
 
     @property
-    def unique_id(self):
+    def unique_id(self) -> str:
         return f"{super().unique_id}_{self._data_key}"
 
     @property
     def value(self) -> datetime.datetime:
         """ Returns value as timestamp """
-        # return self.gateway.data.me.pool.latestReading
-        # lastReadTime = dateutil.parser.parse(self.gateway.data[self._data_key])
         return dateutil.parser.parse(self.gateway.data[self._data_key])
 
     @property
@@ -89,6 +95,6 @@ class mySutroTimeStamp(mySutroEntity, SensorEntity):
         return self.value
 
     @property
-    def data_valid(self):
+    def data_valid(self) -> bool:
         """ Returns true is data is valid, always true """
         return True
