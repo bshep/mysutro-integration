@@ -42,7 +42,7 @@ class MySutroGateway:
         """
         args = {}
         req_data = """{
-            \"query\":\"query { 
+            "query":"query { 
                 me { 
                     pool { 
                         latestReading { 
@@ -58,7 +58,8 @@ class MySutroGateway:
                         } 
                     } 
                 } 
-            \"}"""
+            "}
+        """
         req_headers = {
             "Content-Type": "application/json",
             "User-Agent": "Sutro/348 CFNetwork/1333.0.4 Darwin/21.5.0",
