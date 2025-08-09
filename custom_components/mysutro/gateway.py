@@ -19,14 +19,20 @@ class MySutroGateway:
         self.token = token
         self.api_endpoint = "https://api.mysutro.com/graphql"
         self.sutro_state = ""
+        _LOGGER.debug("Initialized MySutroGateway with token: %s", token[:6] + "..." if token else None)
 
     def update(self) -> None:
         """Called when an update is requested by HASS
         """
+        _LOGGER.debug("Calling update on MySutroGateway")
         result_json = self.api_request()
-
+        _LOGGER.debug("API request result: %s", result_json)
         if result_json != "":
-            self.sutro_state = result_json['data']['me']['pool']['latestReading']
+            try:
+                self.sutro_state = result_json['data']['me']['pool']['latestReading']
+                _LOGGER.debug("Updated sutro_state: %s", self.sutro_state)
+            except Exception as e:
+                _LOGGER.error("Failed to update sutro_state: %s", e)
 
     def api_request(self) -> dict[str, Any]:
         """Sends a request to the sutro API.  Currently just loads the status   .
@@ -35,9 +41,6 @@ class MySutroGateway:
             str: The result from the query as JSON
         """
         args = {}
-
-        ret = None
-
         req_data = """{
             \"query\":\"query { 
                 me { 
@@ -56,23 +59,28 @@ class MySutroGateway:
                     } 
                 } 
             \"}"""
-
         req_headers = {
             "Content-Type": "application/json",
             "User-Agent": "Sutro/348 CFNetwork/1333.0.4 Darwin/21.5.0",
             "Authorization": "Bearer " + self.token
         }
-
-        ret = requests.post(
-            self.api_endpoint, params=args, timeout=1, data=req_data, headers=req_headers
-        )
-        ret = ret.json()
-
-        return ret
+        _LOGGER.debug("Sending POST to %s with headers: %s and data: %s", self.api_endpoint, req_headers, req_data)
+        try:
+            ret = requests.post(
+                self.api_endpoint, params=args, timeout=1, data=req_data, headers=req_headers
+            )
+            ret.raise_for_status()
+            ret_json = ret.json()
+            _LOGGER.debug("Received response: %s", ret_json)
+            return ret_json
+        except Exception as e:
+            _LOGGER.error("API request failed: %s", e)
+            return {}
 
     @property
     def data(self) -> str:
         """ Returns the last data retrieved with the update method """
+        _LOGGER.debug("Accessing sutro_state: %s", self.sutro_state)
         return self.sutro_state
 
     @property
