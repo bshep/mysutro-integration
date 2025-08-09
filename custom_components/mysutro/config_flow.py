@@ -21,7 +21,7 @@ class MySutroOptionsFlowHandler(config_entries.OptionsFlow):
         if user_input is not None:
             # Validate credentials and update entry
             try:
-                hass = self.config_entry.hass
+                hass = self.hass
                 info = await validate_input(hass, user_input)
             except CannotConnect:
                 return self.async_show_form(
