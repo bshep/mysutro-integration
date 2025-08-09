@@ -65,6 +65,7 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     @staticmethod
     def async_get_options_flow(config_entry):
         return MySutroOptionsFlowHandler(config_entry)
+    
 class MySutroOptionsFlowHandler(config_entries.OptionsFlow):
     def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
         self.config_entry = config_entry
@@ -73,7 +74,7 @@ class MySutroOptionsFlowHandler(config_entries.OptionsFlow):
         if user_input is not None:
             # Validate credentials and update entry
             try:
-                hass = self.config_entry.hass
+                hass = self.hass
                 info = await validate_input(hass, user_input)
             except CannotConnect:
                 return self.async_show_form(
