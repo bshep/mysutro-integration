@@ -1,0 +1,12 @@
+certifi
+libvirt-python
+meson
+numpy
+openvino
+openvino-telemetry
+packaging
+pycairo
+PyGObject
+# TBB
+voluptuous
+homeassistant

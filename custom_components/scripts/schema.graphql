@@ -1,0 +1,7694 @@
+schema {
+  query: RootQueryType
+  mutation: RootMutationType
+}
+
+"""An object showing the content of a sent notification"""
+type SentNotificationType {
+  body: String
+  id: ID!
+  title: String
+}
+
+"""Input parameters for the upsertEquipmentProfile mutation"""
+input EquipmentProfileParams {
+  filterType: FilterType
+  hasHeater: Boolean
+  hasLights: Boolean
+  hasSunCover: Boolean
+  hasWaterfall: Boolean
+  hasWinterCover: Boolean
+  interior: Boolean
+  linerType: LinerType
+  poolId: Int
+  poolType: PoolPlacementType
+  sutroEmail: String!
+  waterSource: WaterSource
+}
+
+"""An object showing information about a given Recharge subscription"""
+type RechargeSubscription {
+  device: Device
+  id: ID!
+  insertedAt: DateTime
+  lastRechargeOrderDate: DateTime
+  paymentMethodAdded: Boolean
+  rechargeCustomerId: String
+  rechargeSubscriptionEmail: String
+  rechargeSubscriptionId: String
+  state: SubscriptionState
+  subscriptionClass: SubscriptionClass
+  subscriptionType: String
+  updatedAt: DateTime
+  user: User
+}
+
+"""An object that displays data messages sent to a `SutroUser`"""
+type DataMessageHistoryType {
+  """The data message that was sent"""
+  dataMessage: SentDataMessageType
+  id: ID!
+  insertedAt: DateTime
+
+  """
+  The email address belonging to the token of the entity that triggered the data message
+  """
+  triggerTokenEmail: String
+
+  """The `SutroUser` this data message was sent to"""
+  user: User
+}
+
+enum UserSearchFieldType {
+  DEVICE_FIELDS
+  EMAIL
+  HUB_FIELDS
+  NAME
+  PHONE
+}
+
+type PoolStoresResult {
+  count: Int
+  next: Int
+  poolStores: [ScPoolStores]
+  previous: Int
+}
+
+"""
+The latest `Recommendation`s for a `Pool` and other relevant information.
+"""
+type LatestRecommendations {
+  """
+  A top-level warning if two or more `Recommendation` treatments should be combined with care
+  """
+  conflictWarning: String
+
+  """The list of latest `Recommendations`"""
+  recommendations: [Recommendation]!
+}
+
+"""
+The options for querying manual readings. The same as `reading_type` but includes `all`
+"""
+enum ReadingTypeQuery {
+  ALL
+  FULL
+  PARTIAL
+}
+
+"""Different types of `SutroUser`s"""
+enum SutroUserType {
+  """A Sutro Central `SutroUser` that also has a Sutro device"""
+  BOTH
+
+  """An Ecolab user"""
+  ECOLAB
+
+  """
+  A Sutro Central `SutroUser` (formerly called PROF), one that does not have a devices
+  """
+  PARTNERS_PORTAL
+
+  """A normal `SutroUser`"""
+  SUTRO
+
+  """
+  A Sutro Central `SutroUser` (formerly called PROF), one that does not have a devices
+  """
+  SUTRO_CENTRAL
+}
+
+"""
+A simple object containing a flag indicating sucess or failure and a message if applicable
+"""
+type FlagAndMessage {
+  message: String
+  sentToUser: String!
+  success: Boolean!
+}
+
+"""The different statuses an interval can have"""
+enum IntervalStatus {
+  DONE
+  PENDING
+}
+
+type UpdateCustomerAddressResult {
+  addressUpdated: Boolean!
+  message: String!
+}
+
+"""
+A representation of a `PoolProfile`. Contains values used by SutroAI to assess `PoolReading`s, calculate `Recommendation`s, and provide thresholds for visualizing good/green, ok/yellow, and bad/red measurement ranges.
+"""
+type PoolProfile {
+  """Lower bound of high bad/red range of alkalinity"""
+  alkalinityHigh: Float!
+
+  """Upper bound of low bad/red range of alkalinity"""
+  alkalinityLow: Float!
+
+  """Lower bound of high ok/yellow range of alkalinity"""
+  alkalinityOkayHigh: Float!
+
+  """Upper bound of low ok/yellow range of alkalinity"""
+  alkalinityOkayLow: Float!
+
+  """Target value for alkalinity measurements"""
+  alkalinityTarget: Float!
+
+  """Lower bound of high bad/red range of chlorine"""
+  chlorineHigh: Float!
+
+  """Upper bound of low bad/red range of chlorine"""
+  chlorineLow: Float!
+
+  """Lower bound of high ok/yellow range of chlorine"""
+  chlorineOkayHigh: Float!
+
+  """Upper bound of low ok/yellow range of chlorine"""
+  chlorineOkayLow: Float!
+
+  """Target value for chlorine measurements"""
+  chlorineTarget: Float!
+
+  """
+  The conversion factor to apply to the chlorine thresholds to use with bromine `PoolReading` measurements and `Recommendation`s
+  """
+  chlorineToBromineFactor: Float!
+  id: ID!
+
+  """Lower bound of high bad/red range of ph"""
+  phHigh: Float!
+
+  """Upper bound of low bad/red range of ph"""
+  phLow: Float!
+
+  """Lower bound of high ok/yellow range of ph"""
+  phOkayHigh: Float!
+
+  """Upper bound of low ok/yellow range of ph"""
+  phOkayLow: Float!
+
+  """Target value for ph measurements"""
+  phTarget: Float!
+
+  """The sanitizer type this profile is for"""
+  sanitizer: PoolProfileSanitizer!
+  sanitizerName: String!
+
+  """The type of `Pool` this profile is for"""
+  type: PoolType!
+}
+
+type SutroCentralUserResponse {
+  address: String
+  chemicalsData: String
+  email: String
+  filtrationType: String
+  firstName: String
+  heater: String
+  id: Int
+  interior: String
+  lastName: String
+  lights: String
+  linerType: String
+  minOzUv: String
+  minOzUvOptions: String
+  otherWaterSource: String
+  poolType: String
+  poolVolume: String
+  postalCode: String
+  sanitizer: String
+  status: Boolean
+  sunCover: String
+  waterfall: String
+  winterCover: String
+}
+
+"## DEPRECATION NOTE: `ProfileBucket` is no longer used in current mutations.\n\nTypes of `Chemical` 'bucket' corresponding to `Chemical` roles assigned in a `ChemicalProfile`.\n\n#### Notes\nThese values are **case-sensitive**.\n"
+enum ProfileBucket {
+  """
+  Chemical used to increase the water alkalinity. Brand names include: Alkalinity up, Alka+, and Alkalinity plus.
+  """
+  ALKALINITY_UP
+
+  """
+  Chemical used to lower the water pH. Brand names include: pH minus, pH-, and pH down.
+  """
+  PH_DOWN
+
+  """
+  Chemical used to raise the water pH. Brand names include: pH plus, pH+, and pH up.
+  """
+  PH_UP
+
+  """
+  Chemical used to disinfect pool on a regular basis. Product names can include: liquid pool chlorine, pool shock, chlorine tablets, granular chlorine, brominating salt, and bromine tablets.
+  """
+  PRIMARY_SANITIZER
+
+  """
+  Chemical that supports primary sanitizer and is used to shock treat. Product names can include: liquid pool shock, liquid pool chlorine, and pool shock.
+  """
+  SECONDARY_SANITIZER
+}
+
+"""Valid liner types"""
+enum LinerType {
+  ---
+  ACRYLIC
+  CONCRETE
+  FIBERGLASS
+  TILE
+  VINYL
+}
+
+"""
+The response to the [completeRecommendation](../../mutation/completerecommendation) mutation
+"""
+type CompleteRecommendationResult {
+  completedAt: String
+  success: Boolean!
+}
+
+type PoolSettings {
+  """Which tweaks to business logic we do for this user"""
+  logicModifiers: [LogicModifier]
+
+  """
+  How frequently the user would like to receive notifications about their readings
+  """
+  notificationsReadingFrequency: NotificationsReadingFrequency
+
+  """
+  Which sorts of readings the user would like to receive notifications about
+  """
+  notificationsReadingType: NotificationsReadingType
+}
+
+type ScPoolStores {
+  address: String
+  city: String
+  country: String
+  countryCode: String
+  id: Int
+  name: String
+  selected: Boolean
+  state: String
+  zipCode: String
+}
+
+"""All chemical types"""
+enum ChemicalType {
+  ALKALINITY_UP
+  IGNORED
+  PH_DOWN
+  PH_UP
+  PRIMARY_SANITIZER
+  SECONDARY_SANITIZER
+}
+
+"""The types of a `ServiceSession`"""
+enum ServiceModeType {
+  BATTERY
+  FULL
+}
+
+"Also known as the Sutro monitor.\n"
+type Device {
+  """A count to track server requests to retract the `Device`'s screws"""
+  autoretractRetries: Int
+
+  """The last battery percentage, as an integer, reported by the `Device`"""
+  batteryLevel: Int
+
+  """
+  The current or last completed `CalibrationSession` associated with this `Device`, if there is any
+  """
+  calibrationSession: CalibrationSession
+
+  """
+  The last count of tests remaining on the current cartridge reported by the `Device`
+  """
+  cartridgeCharges: Int
+
+  """The cartridge shipment data for this device, if any"""
+  cartridgeShipmentData: CartridgeShipmentDataType
+
+  """The last core status reported by the `Device`"""
+  coreStatus: Boolean
+
+  """The firmware version of this `Device` (monitor)"""
+  currentFirmwareVersion: String
+  deviceSusbcriptionSnapshots: [RechargeSubscription]
+
+  """
+  A general indicator of the health 'status' of the `Device` assigned by the server. Certain actions will only be performed if the `Device` has a certain health.
+  """
+  health: HealthType
+
+  """
+  The most recent `CalibrationSession`s for this `Device` over the course of the last 30 days, if there are any
+  """
+  historicalCalibrationSessions(
+    """
+    Return readings from this date and earlier if provided. `startDate` is required if this param is used.
+    """
+    endDate: DateTime
+
+    """If provided, it will return a maximum of this many readings."""
+    limit: Int
+
+    """Return readings from this date and later if provided."""
+    startDate: DateTime
+  ): CalibrationHistoryResult
+
+  """
+  The most recent `ServiceSessions`s for this `Device` over the course of the last 30 days, if there are any
+  """
+  historicalServiceSessions(
+    """
+    Return sessions from this date and earlier if provided. `startDate` is required if this param is used.
+    """
+    endDate: DateTime
+
+    """If provided, it will return a maximum of this many sessions."""
+    limit: Int
+
+    """Return sessions from this date and later if provided."""
+    startDate: DateTime
+  ): ServiceHistoryResult
+  id: ID!
+
+  """The time of the last message received from a `Device`"""
+  lastMessage: DateTime
+
+  """
+  The current or last completed `ServiceSession` associated with this `Device`, if there is any
+  """
+  latestServiceSession: ServiceSession
+
+  """The left motor position"""
+  leftMotorPosition: Int
+
+  """The last lid status reported by the `Device`"""
+  lidOpen: Boolean!
+
+  """What phase of 'life' the device is in."""
+  lifecycleStage: LifecycleStageType
+
+  """
+  Returns a list of manual readings that are either in progress or timed out, as long as they were created within the last 24 hours
+  """
+  manualReadingsInProgress: [ManualReading]
+
+  """
+  Whether this device needs customer support due to a recent primestep timeout in calibration
+  """
+  needsCustomerSupport: Boolean
+
+  """Whether or not the `Device` is communicating with its `Hub`"""
+  online: Boolean
+
+  """The pool store that sold this device, if any"""
+  poolStore: PoolStoreType
+
+  """The right motor position"""
+  rightMotorPosition: Int
+
+  """
+  Whether the `Device` has reported automatically retracting its screws (e.g. on account of a low battery)
+  """
+  screwAutoretracted: Boolean
+
+  """The unique serial number for this `Device`"""
+  serialNumber: String!
+
+  """The settings for this device"""
+  settings: DeviceSettings
+
+  """
+  Whether or not the device should take regularly-scheduled full and partial readings. This does not affect hourly check-ins for battery, temperature, subG/wifi info, etc.
+  """
+  shouldTakeReadings: Boolean
+
+  """The subscription associated with this device."""
+  subscription: RechargeSubscription
+
+  """The last water temperature, as a float, reported by the `Device`"""
+  temperature: Float
+}
+
+"A representation of the treatment and related information provided by SutroAI's analysis of the chemistry from a user's `PoolReading`. A `Recommendation` is only said to be current if it has not already `expiredAt` some time.\n"
+type Recommendation {
+  """
+  The chemical product referenced in this recommendation's `treatment`, if there is one
+  """
+  chemical: Chemical
+
+  """
+  A UTC timestamp which, if present, indicates the user has completed the `treatment` advised by this recommendation
+  """
+  completedAt: DateTime
+
+  """
+  A qualitative representation of how the current reading amounts for this recommendation `type` compare to the target amounts, e.g. 'LOW', 'OK', or 'HIGH'
+  """
+  decision: RecommendationDecision!
+
+  """
+  A UTC timestamp which, if present, indicates this recommendation and its `treatment` expired at the timestamp
+  """
+  expiredAt: DateTime
+
+  """
+  A user-friendly description of how this recommendation's `treatment` will benefit their pool
+  """
+  explanation: String!
+  id: ID!
+
+  """A UTC timestamp indicating when this record was created in the DB"""
+  insertedAt: DateTime
+
+  """The reading this recommendation was generated from"""
+  reading: PoolReading
+
+  """
+  A user-friendly action or series of actions the user should take to improve their water chemistry
+  """
+  treatment: String!
+
+  """
+  What type of problem this recommendation is for, e.g. 'PH', 'ALKALINITY', or 'CHLORINE'
+  """
+  type: RecommendationType!
+}
+
+"""
+Some details about a payment method to allow users to recognize it without giving away too much information
+"""
+type RechargePaymentDetails {
+  brand: String
+  expMonth: Int
+  expYear: Int
+  last4: String
+}
+
+enum NotificationsOfflineType {
+  IMMEDIATELY_ON_ANY_HARDWARE_OFFLINE
+  IMMEDIATELY_ON_HUB_OFFLINE
+  IMMEDIATELY_ON_MONITOR_OFFLINE
+  NONE
+  ONCE_PER_DAY
+}
+
+"The response to the [historical calibration sessions](../object/device/#historicalcalibrationsessions) query\n"
+type CalibrationHistoryResult {
+  """The number of `CalibrationSession`s available over the past 30 days"""
+  count: Int!
+
+  """The `CalibrationSession`s, sorted from newest to oldest"""
+  sessions: [CalibrationSession]
+}
+
+type WebhookListenerGroup {
+  """
+  The serial number of the device that owns the listeners in the listener list
+  """
+  deviceSerial: String!
+
+  """List of listeners for this device"""
+  listeners: [WebhookListener!]!
+}
+
+"""Possible types for the status field of an OTA session."""
+enum OtaSessionStatus {
+  FAILURE
+  IN_PROGRESS
+  SUCCESS
+  TIMED_OUT
+}
+
+enum Language {
+  ENGLISH
+  FRENCH
+}
+
+"""
+Desgined to partially match Recharge's object described [here](https://developer.rechargepayments.com/2021-11/payment_methods/payment_methods_object)
+"""
+type RechargePaymentMethod {
+  customerId: String!
+  default: Boolean
+  id: Int!
+  paymentDetails: RechargePaymentDetails
+  paymentType: String!
+  processorCustomerToken: String!
+  processorName: String!
+  processorPaymentMethodToken: String!
+}
+
+type ConvertedAmountPart {
+  """The unit that the `Chemical`'s amount (value) was returned in."""
+  unit: String
+
+  """The amount of the `Chemical` that SutroAI recommends using."""
+  value: Float
+}
+
+"""Input parameters type expected for the linkPaymentMethod mutation"""
+input LinkPaymentMethodParams {
+  paymentType: String!
+
+  """The Stripe `cus_` token for the user"""
+  processorCustomerToken: String!
+
+  """The Stripe `pm_` token for the payment method"""
+  processorPaymentMethodToken: String!
+  rechargeCustomerId: String!
+
+  """The identifier of which subscription we are linking the payment."""
+  rechargeSubscriptionId: String
+}
+
+"""An object that represents an amount of a chemical"""
+type Amount {
+  unit: String
+  value: Float
+}
+
+"""Assignable chemical behaviours"""
+enum AssignableChemicalBehaviour {
+  MIX_DCCNA_OXONE
+  HOUSEHOLD_BLEACH
+  CYANURIC_ACID
+  SALTWATER_GENERATOR
+  POTASSIUM_PEROXYMONOSULFATE
+  FROG_AT_EASE_CARTRIDGE_CHLORINE
+  CHLORINE_TABLETS_1_INCH
+  SM_SPA_MAINTENANCE_KIT_CHLORINE
+  LIQUID_POOL_SHOCK
+  LIQUID_SPA_SODIUM_CARBONATE_30
+  QUATERNARY_AMMONIUM_COMPOUNDS
+  SM_SPA_MAINTENANCE_KIT_BROMINE
+  SM_POOL_MAINTENANCE_KIT_CHLORINE
+  FROG_AT_EASE_CARTRIDGE_BROMINE
+  LIQUID_SPA_SODIUM_BISULFATE_40
+  CALCIUM_HARDNESS
+  DICHLOR_TABLETS_1_INCH
+  MURIATIC_ACID_15
+  MURIATIC_ACID_30
+  POOL_SALT
+  SODIUM_CARBONATE
+  PRISTINE_BLUE_BROMINE
+  SODIUM_BROMIDE
+  DRY_ACID
+  PRISTINE_BLUE_CHLORINE
+  TRICHLOR
+  HYDROGEN_PEROXIDE
+  DICHLOR
+  CHLORINE_TABLETS_3_INCHES
+  BROMINE_SALTS
+  CALCIUM_HYPOCHLORITE
+  BROMINE_TABLETS
+  SPA_ONLY_MIX_DCCNA_OXONE
+  ALKALINITY_UP
+  TRICHLOR_ZINC_TABLETS_3_INCHES_99
+  NON_STABILIZED_TABLET_CALCIUM_HYPOCHLORITE_70
+}
+
+"""Types of `step` of a `ServiceSession`"""
+enum ServiceModeStep {
+  AWAITING_BATTERY
+  CHANGE_CARTRIDGE
+  FLUSHING
+  POOL_REMOVAL
+  READINESS_CHECK
+  RECONNECTION
+  SCREW_REQUESTED
+  SCREW_RETRACTING
+}
+
+type CartridgeShipmentDataType {
+  currentlyEligibleForShipment: Boolean
+  deviceId: ID
+  id: ID
+  updatedAt: DateTime
+  wentUnderThresholdAt: DateTime
+}
+
+"""
+The response for the sendNotification mutation that returns a flag indicating success or failure and a mesasge if applicable
+"""
+type SendNotificationResult {
+  results: [FlagAndMessage]
+}
+
+type ReactivateSubscriptionResult {
+  message: String!
+  subscriptionReactivated: Boolean!
+}
+
+"A display type for a `HistoricalBatteryLevel`\n"
+type HistoricalBatteryLevel {
+  insertedAt: DateTime
+  value: Int!
+}
+
+"Types of `Hub` connectivity\n"
+enum ConnectivityType {
+  LTE
+  WIFI
+}
+
+"""
+An object containing records of notifications and data messages sent to a `SutroUser`
+"""
+type AllNotificationHistoryType {
+  dataMessageHistory: [DataMessageHistoryType]
+  notificationHistory: [NotificationHistoryType]
+}
+
+input ChemicalQueryParams {
+  """All returned `Chemical`s' will have this `ChemicalBehaviour`."""
+  behaviour: AssignableChemicalBehaviour
+
+  """
+  If true, all returned `Chemical`s' will be generic/fallback chemicals. If false, none will be generic/fallback. If omitted, both will be returned.
+  """
+  generic: Boolean
+
+  """
+  All returned `Chemical`s' will be compatible with the `PoolProfile` that corresponds to this ID.
+  """
+  profileId: ID
+
+  """
+  All returned `Chemical`s' will be compatible with this `ChemicalType`. 'sanitizer' is an alias for both 'primary_sanitizer' and 'secondary_sanitizer'.
+  """
+  type: String
+
+  """All returned `Chemical`s' UPCs will start with this UPC."""
+  upc: String
+}
+
+"The response to the [historical recommendations](../object/pool/#historicalrecommendations) query for a user's `Recommendation` history\n"
+type RecommendationHistoryResult {
+  """
+  The number of non-duplicate `Recommendation`s available over the past 30 days
+  """
+  count: Int!
+
+  """The `Recommendation`s, sorted from newest to oldest"""
+  recommendations: [Recommendation]!
+}
+
+"A representation of state for an `OtaSession` of a `Hub`.\n"
+type OtaSession {
+  """The current status of the OTA session."""
+  status: OtaSessionStatus!
+}
+
+"""
+Flags that might be set on a reading if it appears to be invalid in some way
+"""
+enum Trend {
+  CALIBRATION_STABILIZER
+  HIGH_ALKALINITY_TREND
+  LARGE_ALKALINITY_JUMP_TREND
+  LARGE_CHLORINE_JUMP_TREND
+  LARGE_PH_JUMP_TREND
+  LOW_CHLORINE_SINGLE_TREND
+  LOW_CHLORINE_TREND
+  LOW_PH_TREND
+}
+
+"""Types of `Pool`"""
+enum PoolType {
+  PISCINE
+  POOL
+  SPA
+}
+
+"A reading/test taken for a `Pool` and the analysis done on that reading.\n\nReadings are typically scheduled for every 8 hours: one full reading at 8AM PDT and two partial readings at 12AM and 4PM PDT. For more information on readings, see the **API Doc**.\n\n#### Notes\n* The reading time provided by the Sutro monitor is generally unreliable, so we resolve `reading_time` to `inserted_at` instead to provide the more accurate time for when the reading was taken. See ADR 0010-resolve-reading-time-timestamp-to-inserted-at.md for more context\n* Sometimes the `Device` reports the same reading multiple times. To track this behavior without disrupting the user experience, the \"latest reading\" is resolved as the earliest reading from the set of readings with the same values as the most recent reading.\n* Prefer a `bromine` measurement to a `chlorine` one, if `bromine` is present\n"
+type PoolReading {
+  """
+  The alkalinity measurement reported by the monitor. If this value is `null`, this indicates the reading is a **partial reading**.
+  """
+  alkalinity: Float
+
+  """
+  The bromine measurement computed from the chlorine measurement reported by the monitor. Present only for users with a bromine sanitizer selected for their `PoolProfile`, preferred over the `chlorine` measurement.
+  """
+  bromine: Float
+
+  """The chlorine measurement reported by the monitor"""
+  chlorine: Float
+  id: ID!
+
+  """The UTC timestamp when the reading was inserted"""
+  insertedAt: DateTime
+
+  """A list of reaons why a given reading could be incorrect"""
+  invalidatingTrends: [Trend]
+  maxAlkalinity: Float
+  minAlkalinity: Float
+
+  """
+  The average of values from the last three readings (exlcluding any suppressed readings)
+  """
+  movingAverage: MovingAverageType
+
+  """The ph measurement reported by the monitor"""
+  ph: Float
+
+  """
+  [DEPRECATED] A list of `Problem`s found when analyzing this `PoolReading`'s values. Replaced by `recommendations`.
+  """
+  problems: [SingleReadingProblem]
+
+  """
+  The raw reading data reported by the monitor, as a stringified array of 16-bit hexadecimal numbers
+  """
+  rawData: String
+
+  """
+  The UTC timestamp when the reading was taken
+  
+  #### Notes
+  The reading_time provided by the Sutro monitor is generally unreliable, so we resolve this field to `inserted_at` instead to provide a more accurate time for when the reading was taken.
+  
+  See ADR 0010-resolve-reading-time-timestamp-to-inserted-at.md for more context
+  """
+  readingTime: DateTime
+  recommendations: [Recommendation]!
+
+  """
+  Whether or not TA interpolation was used to calculate the Alkalinity for this reading
+  """
+  taInterpolationUsed: Boolean!
+}
+
+type User {
+  """The history of notifications and data messages this user has received"""
+  allNotificationHistory(
+    """Whether to return `Notifications` that have been marked as deleted"""
+    includeDeleted: Boolean
+
+    """
+    If provided, it will return a maximum of this many entries for each type
+    """
+    limit: Int
+  ): AllNotificationHistoryType
+
+  """
+  The `Device` (monitor) associated with this user through their hub, if they have set one up
+  """
+  device: Device
+
+  """The user's email address"""
+  email: String!
+
+  """The `EquipmentProfile` for this user"""
+  equipmentProfile: EquipmentProfile
+
+  """The user's first name"""
+  firstName: String!
+
+  """The homes associated with this user."""
+  homes: [HomeObject]
+
+  """The `Hub` associated with this user, if they have set one up"""
+  hub: Hub
+  id: ID!
+  insertedAt: DateTime
+
+  """The user's last name"""
+  lastName: String!
+
+  """The user's phone number, if they registered with one"""
+  phone: String
+
+  """The profile of the user's `Pool` (or spa), if they have set one up"""
+  pool: Pool
+
+  """The name of the release group that this user's hardware is part of"""
+  releaseGroup: ReleaseGroupType
+
+  """The `Settings` for this user"""
+  settings: Settings
+
+  """This user's subscription"""
+  subscription: RechargeSubscription
+
+  """The history of subscription changes for this user"""
+  subscriptionHistory: [RechargeSubscription]
+
+  """The user's type"""
+  type: SutroUserType!
+}
+
+"Types of `Hub` battery charger status\n"
+enum ChargerStatusType {
+  """The battery in the `Hub` is fully charged"""
+  CHARGED
+
+  """The battery in the `Hub` is charging"""
+  CHARGING
+
+  """There is no battery presently in the `Hub`"""
+  NO_BATTERY
+}
+
+"""
+Qualitative representation of how a reading amount compares to the target amount, included in a `Recommendation`
+"""
+enum RecommendationDecision {
+  HIGH
+  LOW
+  OK
+}
+
+"A display type for a `HistoricalTemperature`\n"
+type HistoricalTemperature {
+  insertedAt: DateTime
+  value: Int!
+}
+
+enum ProfileSource {
+  DEFAULT
+  POOL_STORE
+  USER
+}
+
+"""A response containing a webhook listener"""
+type WebhookListener {
+  """
+  This token will be used to authenticate requests to the supplied webhook URL
+  """
+  bearerToken: String
+
+  """The device associated with this webhook listener"""
+  device: Device
+
+  """Type of event the webhook listens for"""
+  eventType: String
+  id: ID!
+  insertedAt: DateTime
+
+  """Name of the webhook listener"""
+  name: String
+  updatedAt: DateTime
+
+  """The URL where webhook events will be sent"""
+  webhookUrl: String
+}
+
+type UpdateCustomerSubscriptionTypeResult {
+  message: String!
+  subscriptionTypeUpdated: Boolean!
+}
+
+"""
+Settings options for how frequently the user would like to receive notifications about their readings
+"""
+enum NotificationsReadingFrequency {
+  """Send a notification with each new reading"""
+  EVERY_READING
+
+  """Send a single notification per day"""
+  ONCE_DAILY
+}
+
+"A single result in the response to the [getDevicesNeedingNewCartridges](../../operation/query/#getDevicesNeedingNewCartridges) query\n"
+type NeedsNewCartridge {
+  backendDeviceId: Int
+
+  """phone (c is for cell)(Jacuzzi format)"""
+  c: String
+
+  """The amount of charges in the cartridge of this device"""
+  cartridgeCharges: Int
+
+  """Whether this device is eligible to receive a new cartridge or not"""
+  currentlyEligibleForShipment: Boolean
+
+  """currentlyEligibleForShipment (el is for eligible)(Jacuzzi format)"""
+  el: Boolean
+
+  """sutroEmail (Jacuzzi format)"""
+  em: String!
+  firstName: String
+
+  """firstName (Jacuzzi format)"""
+  fn: String
+
+  """hubId (Jacuzzi format)"""
+  hid: String
+  hubId: String
+
+  """
+  The timestamp of the most recent cartridge count received from this device
+  """
+  lastCartridgeCount: DateTime
+  lastName: String
+
+  """lastName (Jacuzzi format)"""
+  ln: String
+
+  """
+  time stamp of last update to this device's shipment data (Jacuzzi format)
+  """
+  lu: Int
+
+  """monitorId (Jacuzzi format)"""
+  mid: String
+  monitorId: String
+  phone: String
+
+  """The Recharge email of this user"""
+  rechargeEmail: String
+
+  """The Sutro email of this user"""
+  sutroEmail: String!
+
+  """cartridge_charges (tr is for tests remaining)(Jacuzzi format)"""
+  tr: Int
+
+  """
+  The timestamp of the most recent time this device went from being ineligible for a new cartridge to eligible
+  """
+  wentUnderThresholdAt: DateTime
+}
+
+"Each user is expected to set up their `Pool` during onboarding. Details of their `Pool` are used to make chemical recommendations.\n"
+type Pool {
+  """
+  The `ChemicalProfile` associated with this `Pool`, if the user has filled one out"
+  """
+  chemicalProfile: ChemicalProfile
+
+  """The device associated with this pool through the hub"""
+  device: Device
+
+  """The equipment profile associated with this pool."""
+  equipmentProfile: EquipmentProfile
+
+  """The volume of the `Pool`, as an integer amount of gallons"""
+  gallons: Float
+
+  """
+  Whether this pool has an associated device.
+  This is significant for app logic that needs to distinguish between
+  pure Sutro Users (those who have Sutro devices) and Partners' Portal
+  users (who do not have Sutro devices).
+  """
+  hasDevice: Boolean
+
+  """
+  The most recent `PoolReading`s taken for this `Pool` over the course of the last 30 days, if there are any readings for it
+  
+  #### Notes
+  If there are duplicate readings (readings with the same measured test values but different insert times), it excludes the duplicates, keeping the oldest reading of each batch
+  """
+  historicalReadings(
+    """
+    Return readings from this date and earlier if provided. `startDate` is required if this param is used.
+    """
+    endDate: DateTime
+
+    """
+    Determines whether readings with the `CALIBRATION_STABILIZER` trend will be returned.
+    """
+    excludeCalibrationStabilizer: Boolean
+
+    """Determines whether duplicate readings will be returned."""
+    excludeDuplicates: Boolean
+
+    """
+    Determines whether readings that the app would suppress will be returned
+    """
+    excludeSuppressed: Boolean
+
+    """If provided, it will return a maximum of this many readings."""
+    limit: Int
+
+    """
+    *[For Testing Only]* If provided, generates mock random but realistic readings evenly-spaced for every eight hours instead of using the user's actual readings.
+    """
+    mock: Boolean
+
+    """
+    Return readings from the time the user's `Pool` was created onwards. Only returns the count, not the actual readings.
+    """
+    sinceSetupCountOnly: Boolean
+
+    """Return readings from this date and later if provided."""
+    startDate: DateTime
+  ): ReadingHistoryResult
+  historicalRecommendations(
+    """
+    Return recommendations from this date and earlier if provided. `startDate` is required if this param is used.
+    """
+    endDate: DateTime
+
+    """If provided, it will return a maximum of this many recommendations."""
+    limit: Int
+
+    """Return recommendations from this date and later if provided."""
+    startDate: DateTime
+  ): RecommendationHistoryResult!
+
+  """The ID of the home the pool belongs to."""
+  homeId: Int
+
+  """The hub associated with this pool."""
+  hub: Hub
+  id: ID!
+  lastPoolStatusChange: String
+  lastStatusChange: DateTime
+
+  """
+  The most recent `PoolReading` taken for this `Pool`, if there are readings for it
+  
+  #### Notes
+  If there are multiple "identical" readings to the latest reading (readings with the same measured test values) but different insert times, resolves to the oldest reading of the batch
+  """
+  latestReading: PoolReading
+  latestRecommendations: LatestRecommendations!
+
+  """The name of the `Pool`"""
+  name: String
+
+  """
+  A list of additional optional sanitizers the user has indicated they use in their `Pool`, if any
+  """
+  options: [PoolProfileOption]!
+
+  """
+  The `PoolProfile` associated with this `Pool`, if the user has selected one"
+  """
+  poolProfile: PoolProfile
+  reopenedOn: DateTime
+
+  """
+  [DEPRECATED] Indicates whether or not the `Pool` uses a saltwater generator. Superceded by `PoolProfile`.
+  """
+  saltwater: Boolean @deprecated(reason: "This field is deprecated. Please refer to `PoolProfile` association instead.")
+
+  """The id of the pool store selected from SutroCentral"""
+  scPoolStoreId: Int
+
+  """The name of the pool store selected from SutroCentral"""
+  scPoolStoreName: String
+
+  """The settings for this pool"""
+  settings: PoolSettings
+
+  """
+  Indicates whether the app should show a banner asking the user if they have received their cartridge
+  """
+  shouldAskIfReceivedCartridge: Boolean
+
+  """
+  [DEPRECATED] Indicates if the `Pool` is a pool or a spa. Superceded by `PoolProfile`.
+  """
+  type: PoolType @deprecated(reason: "This field is deprecated. Please refer to `PoolProfile` association instead.")
+  willReopenOn: DateTime
+}
+
+"Types of `Device` lifecycle stages, which roughly indicates what the device has or has not done yet, which 'phase' of life its in.\n"
+enum LifecycleStageType {
+  """
+  The `Device` is not currently taking readings because the battery went too low after onboarding with less than 90%.
+  """
+  BLOCKED_ON_BATTERY_CHANGE
+
+  """The `Device` is newly inserted into the database."""
+  BRAND_NEW_DEVICE
+
+  """The `Device` has been paired through onboarding."""
+  DEVICE_PAIRED
+
+  """
+  The `Device` has gone through its first calibration session and passed precheck 90% or more battery.
+  """
+  FIRST_CALIBRATION_FINISHED_FULL_BATTERY
+
+  """
+  The `Device` has gone through its first calibration session and passed precheck one with less than 90% battery.
+  """
+  FIRST_CALIBRATION_FINISHED_HALF_BATTERY
+
+  """The `Device` has been calibrated and servied."""
+  NORMAL_OPERATION_MODE
+
+  """The `Device` has been RMA'd."""
+  RETIRED_DEVICE
+}
+
+"The response to the [historical service sessions](../object/device/#historicalservicesessions) query\n"
+type ServiceHistoryResult {
+  """The number of `ServiceSession`s available over the past 30 days"""
+  count: Int!
+
+  """The `ServiceSession`s, sorted from newest to oldest"""
+  sessions: [ServiceSession]
+}
+
+"""Valid pool types"""
+enum PoolPlacementType {
+  ---
+  ABOVE_GROUND
+  IN_GROUND
+}
+
+enum MeasurementSystem {
+  IMPERIAL
+  METRIC
+}
+
+"""
+The average of certain values from the last three readings (excluding any supressed readings)
+"""
+type MovingAverageType {
+  bromine: Float
+  chlorine: Float
+  ph: Float
+}
+
+"""Available pool profile sanitizers"""
+enum PoolProfileSanitizer {
+  BROME
+  BROMINE
+  CHLORE
+  CHLORINE
+  EAU_SALÉE
+  FROG_SYSTEM_BROMINE
+  FROG_SYSTEM_CHLORINE
+  MAINTENANCE_KIT_BROMINE_SPA
+  MAINTENANCE_KIT_CHLORINE_POOL
+  MAINTENANCE_KIT_CHLORINE_SPA
+  PRISTINE_BLUE_BROMINE
+  PRISTINE_BLUE_CHLORINE
+  SALTWATER
+  SYSTÈME_FROG_(BROME)
+}
+
+"""Valid water sources"""
+enum WaterSource {
+  ---
+  CITY
+  OTHER
+  WELL
+}
+
+type Cartridge {
+  insertedAt: DateTime
+  serialNumber: String
+  updatedAt: DateTime
+}
+
+type SutroCentralHomeResponse {
+  address: String
+  city: String
+  country: String
+  homeId: Int
+  homeNickname: String
+  phoneNumber: String
+  postalCode: String
+  state: String
+}
+
+"""A representation of an address"""
+type Address {
+  addressLine1: String
+  addressLine2: String
+  city: String
+  country: String
+
+  """The home associated with this user"""
+  home: HomeObject
+  id: ID
+  isShippingAddress: Boolean
+  latitude: Float
+  longitude: Float
+  postalCode: String
+  state: String
+  timeZoneId: String
+}
+
+"""The valid types of notifications that can be sent to users"""
+enum NotificationType {
+  """Send a data communication which will not result in a push notification"""
+  DATA
+
+  """Send a push notification"""
+  PUSH
+}
+
+type NotificationsOffline {
+  """When the user would like to know that their device is offline"""
+  notificationsOffline: NotificationsOfflineType!
+}
+
+"""Available pool profile options"""
+enum PoolProfileOption {
+  MINERAL
+  OZONE
+  UV
+}
+
+"A single result in the response to the [users](../../operation/query/#users) query containing basic information about the user that is useful for quickly searching users via the diagnostics tool\n"
+type UserSearchResult {
+  """The unique serial number for this `SutroUser`'s `Device`"""
+  deviceSerial: String @deprecated(reason: "This field is deprecated and is now a subfield of the `hardwareList` field.")
+
+  """The email address of this `SutroUser`"""
+  email: String!
+
+  """The list of all devices and hubs associated with this user"""
+  hardwareList: [HardwareObject]
+
+  """The unique serial number for this `SutroUser`'s `Hub`"""
+  hubSerial: String @deprecated(reason: "This field is deprecated and is now a subfield of the `hardwareList` field.")
+
+  """The MES data associated with the given user"""
+  mesData: MesData @deprecated(reason: "This field is deprecated and is now a subfield of the `hardwareList` field.")
+
+  """The name of this `SutroUser`"""
+  name: String!
+
+  """The id for this `SutroUser`'s `Pool`"""
+  poolId: ID
+
+  """
+  The name of the release group that this `SutroUser`s hardware is part of
+  """
+  releaseGroup: ReleaseGroupType @deprecated(reason: "This field is deprecated and is now a subfield of the `hardwareList` field.")
+  subscriptionClass: SubscriptionClass @deprecated(reason: "This field is deprecated and is now a subfield of the `hardwareList` field.")
+
+  """The type of this `SutroUser`"""
+  type: UserSearchUserType
+
+  """The time of the last update to this user's information"""
+  updatedAt: DateTime
+
+  """The id of this `SutroUser`"""
+  userId: ID
+}
+
+"A display type for a `PoolProfileSanitizer`\n"
+type Sanitizer {
+  """The display string for clients to use"""
+  name: String!
+  value: PoolProfileSanitizer!
+}
+
+"""Input parameters type expected for the updateCustomerAddress mutation"""
+input UpdateCustomerAddressParams {
+  """Example: 5522 Pine Street"""
+  address1: String!
+  city: String!
+
+  """Example: 'United States'"""
+  country: String!
+
+  """Example: 'US' means United States"""
+  countryCode: String!
+
+  """The email address of the customer"""
+  email: String!
+
+  """The first name of the customer"""
+  firstName: String!
+
+  """The last name of the customer"""
+  lastName: String!
+  phone: String!
+  province: String!
+
+  """Example: 'FL' means Florida"""
+  provinceCode: String!
+  zip: String!
+}
+
+"A representation of state for a `CalibrationSession` of a `Device`.\n"
+type CalibrationSession {
+  """
+  Whether or not the battery is fully charged (>90%). Checked during precheck1 and necessary to proceed to the next step of calibration.
+  """
+  batteryStatus: Boolean
+
+  """
+  Whether or not a cartridge is present in the `Device`. Checked during precheck1 and necessary to proceed to the next step of calibration.
+  """
+  cartridgeStatus: Boolean
+
+  """
+  Whether or not the core is secure. Checked during precheck1 and necessary to proceed to the next step of calibration.
+  """
+  coreStatus: Boolean
+
+  """
+  Whether or not we've received the hub and monitor firmware version information.
+  """
+  firmwareStatus: Boolean
+  id: Int!
+
+  """When this `CalibrationSession` session was created."""
+  insertedAt: DateTime
+
+  """
+  Whether or not the lid is closed. Checked during precheck1 and necessary to proceed to the next step of calibration.
+  """
+  lidStatus: Boolean
+
+  """Flag indicating if the mix ball bottom test passed during precheck2."""
+  mixBallBottom: Boolean
+
+  """The number code of the prime response."""
+  primeFunction: String
+
+  """Number of times the prime function has been requested."""
+  primeFunctionRetries: Int
+
+  """The number of readings received."""
+  readingsReceived: Int
+
+  """The number of readings requested."""
+  readingsRequested: Int
+
+  """The overall status for this `CalibrationSession`"""
+  status: String!
+
+  """The current step of this `CalibrationSession`."""
+  step: String
+}
+
+type MoveSutroSessions {
+  bubbleFlushAttempts: Int
+  flow: String
+  fromPool: Pool
+  hub: Hub
+  id: Int
+  insertedAt: DateTime
+  status: String
+  toPool: Pool
+  updatedAt: DateTime
+}
+
+type SutroCentralPoolResponse {
+  chemicalsData: Boolean
+  filtrationType: String
+  heater: Boolean
+  homeId: Int
+  interior: Boolean
+  lights: Boolean
+  linerType: String
+  minOzUv: Boolean
+  minOzUvOptions: String
+  name: String
+  otherWaterSource: String
+  phoneNumber: String
+  poolId: Int
+  poolType: String
+  poolVolume: Float
+  sanitizer: String
+  sunCover: Boolean
+  waterSource: String
+  waterType: String
+  waterfall: Boolean
+  winterCover: Boolean
+}
+
+enum UserSearchUserType {
+  ECOLAB
+  PARTNERS_PORTAL
+  SUTRO
+  SUTRO_CENTRAL
+}
+
+type MesData {
+  cartoonSn: String
+  deviceId: String
+  deviceRetired: Boolean
+  deviceSn: String
+  hasBeenSetUp: Boolean
+  hubId: String
+  hubRetired: Boolean
+  hubSn: String
+  id: Int
+  insertedAt: DateTime
+  moName: String
+  poolStore: PoolStoreType
+  psn: String
+  sim: String
+  updatedAt: DateTime
+  wifiMac: String
+}
+
+"""
+Parameters for identifying and assigning a `Chemical` product to the current user's `ChemicalProfile` with [assignChemical](../../mutation/assignChemical).
+"""
+input AssignChemicalParams {
+  """The id of the Pool"""
+  poolId: Int
+
+  """
+  The name of the `ChemicalType` to assign for this `Chemical`'s role. If not provided, the server will try to assign a role based on its compatible `ChemicalType`s and any roles that are not yet assigned on the user's `ChemicalProfile`.
+  """
+  role: AssignableChemicalType
+
+  """
+  If true, the `Chemical` assignment will not actually be persisted to the user's `ChemicalProfile`, only tested for legitimacy and assignability. Useful for enabling the user to confirm the product scanned before saving. If false or omitted, the `Chemical` will be assigned and persisted.
+  """
+  testAssignmentOnly: Boolean
+
+  """
+  The UPC/barcode number as a string of the `Chemical` product to assign.
+  """
+  upc: String!
+}
+
+"""The possible types of readings that devices can take."""
+enum ReadingType {
+  FULL
+  PARTIAL
+}
+
+"Types of `Device` health, a general indicator of the 'status' assigned by the server. Certain actions will only be performed if the `Device` has a certain health.\n"
+enum HealthType {
+  """
+  The `Device` has no outstanding problems and is ready to take readings. `Device` should operate normally.
+  """
+  GOOD
+
+  """
+  The `Device` has not been properly calibrated and is not ready to take readings. User should be prompted to initiate a calibration session.
+  """
+  NEEDS_CALIBRATION
+
+  """
+  The `Device` has an empty cartridge or a depleted battery. User should be prompted to initiate a service session to replace their cartridge/battery.
+  """
+  NEEDS_SERVICE
+}
+
+"""
+Input parameters type expected for the [analyzeReading](../../operation/query/#analyzereading) mutation
+"""
+input AnalyzeReadingParams {
+  """Alkalinity measurement to use in the analysis."""
+  alkalinity: Float!
+
+  """Chlorine measurement to use in the analysis"""
+  chlorine: Float!
+
+  """
+  Optionally, the `Pool` volume in gallons to use for the analysis, overriding the value set for the current user's `Pool`.
+  """
+  gallons: Float
+
+  """The language the recommendation(s) should be returned in."""
+  language: Language
+
+  """The measurement system to return the recommendation(s) in."""
+  measurementSystem: MeasurementSystem
+
+  """pH measurement to use in the analysis."""
+  ph: Float!
+
+  """
+  Optionally, the id of the `Pool` to use for the analysis. If none is provided, it will default to the user's first pool.
+  """
+  poolId: ID
+
+  """
+  Optionally, the id of the `PoolProfile` to use for the analysis, overriding the profile set for the current user's `Pool`. `PoolProfile`s determine the targets and thresholds used to produce `Recommendation`s.
+  """
+  poolProfileId: ID
+
+  """
+  Where the profile comes from, either the user, the store, or the default profile.
+  """
+  profileSource: ProfileSource
+}
+
+"The response to the [login](../../mutation/login) and [signup](../../mutation/signup) mutations\n"
+type AuthResult {
+  """
+  A JWT token that expires in an hour, used to register a `Hub`. **Only provided on [signup](../../mutation/signup) mutation**
+  """
+  hubToken: String
+
+  """
+  A JWT token for the currently logged in user, required for most Sutro GraphQL mutations
+  """
+  token: String!
+
+  """The current user"""
+  user: User
+}
+
+"""The different history types that can be queried for a device"""
+enum HistoryType {
+  BATTERY_LEVEL
+  CARTRIDGE_COUNT
+  TEMPERATURE
+}
+
+"A representation of a `ReadinessCheckSession`\n"
+type ReadinessCheckSession {
+  device: Device
+
+  """If the device is online"""
+  deviceOnline: Boolean
+
+  """If the hub is online"""
+  hubOnline: Boolean
+  id: ID!
+  insertedAt: DateTime
+  serviceModeSession: ServiceSession
+
+  """The current status of the `ReadinessCheckSession`"""
+  status: String!
+  updatedAt: DateTime
+}
+
+"""
+Response form of the [assignChemical](../../mutation/assignChemical) mutation.
+"""
+type AssignChemicalResponse {
+  """The `Chemical` that was assigned."""
+  chemical: Chemical!
+
+  """The updated `ChemicalProfile`."""
+  chemicalProfile: ChemicalProfile!
+
+  """
+  The result of trying to add the `Chemical` to the current user's `ChemicalProfile`. "OK" indicates a success, anything else indicates a reason for failure.
+  """
+  result: AssignChemicalResult!
+
+  """
+  The role the `Chemical` will be assigned to, if it can be assigned successfully.
+  """
+  role: AssignableChemicalType
+}
+
+"An object containing information about SutroAI's recommended treatment after analyzing a reading\n"
+type RawRecommendation {
+  """The amount of the given chemical SutroAI recommends using."""
+  amount: ConvertedAmount
+
+  """The `Chemical` that SutroAI thinks should be used, if any."""
+  chemical: Chemical
+
+  """SutroAI's recommendation as a string."""
+  treatment: String
+}
+
+"""
+A response for the cartridge registration mutation that contains a success flag and warning if applicable
+"""
+type CartridgeRegistrationResult {
+  success: Boolean!
+  warning: String
+}
+
+"The possible status types for manual readings\n"
+enum ManualReadingStatus {
+  """The flush has been completed, and the device is ready to be stored."""
+  FINISHED
+
+  """
+  The user has removed the device from the water, and a request for the flush has been sent from the backend. We're waiting for the response.
+  """
+  FLUSH_REQUESTED
+
+  """
+  The device has acknowledged the reading request, and we're now waiting for the results.
+  """
+  READING_ACKED_IN_PROGRESS
+
+  """
+  The reading results have been received. The next step is for the user to remove the device from the water and trigger the flush process.
+  """
+  READING_RECEIVED_NEEDS_REMOVAL_AND_FLUSH
+
+  """
+  The request for the reading has been sent, but the device hasn't acknowledged it yet.
+  """
+  READING_REQUESTED_NOT_ACKED
+
+  """
+  The reading or flush process has taken too long to complete and has timed out.
+  """
+  TIMED_OUT
+}
+
+"""
+A response for the reset device health mutation, containing lists of the closed sessions if any
+"""
+type ResetDeviceHealthType {
+  closedCalibrationSessions: [CalibrationSession]
+  closedServiceSessions: [ServiceSession]
+  device: Device!
+}
+
+"Represents an uploaded file.\n"
+scalar Upload
+
+"The response to the [searchMesData](../../operation/query/#search_mes_data) query for a page of MES records\n"
+type MesSearchResults {
+  """The number of MES results on this page"""
+  count: Int!
+
+  """The current page of results"""
+  page: Int!
+
+  """The MES results"""
+  results: [MesData]!
+}
+
+enum SubscriptionClass {
+  BASIC
+  PREMIUM
+}
+
+"Result of trying to assign a `Chemical` to a `ChemicalProfile`.\n"
+enum AssignChemicalResult {
+  """
+  Response if the `Chemical` cannot be added because it is flagged as a product type that we currently ignore.
+  """
+  IGNORED_PRODUCT
+
+  """
+  Response if the `Chemical` cannot be added because it is not compatible with the user's `PoolProfile` settings.
+  """
+  INCOMPATIBLE_PRODUCT
+
+  """Response if the `Chemical` is successfully added."""
+  OK
+
+  """
+  Response if the `Chemical` cannot be added because it has already been added.
+  """
+  SAME_PRODUCT
+
+  """
+  Response if the `Chemical` cannot be added because it fulfills the same role/belongs to the same bucket as one that is already set in the user's `ChemicalProfile`.
+  """
+  SIMILAR_PRODUCT
+
+  """
+  Response if the `Chemical` cannot be added because it is not yet part of our chemical database.
+  """
+  UNKNOWN_PRODUCT
+
+  """
+  [DEPRECATED] Response if the `Chemical` cannot be added because it is not compatible with the `ChemicalType` provided as the `profileBucket` argument (e.g. trying to add a sanitizer as an alkalinity increaser). Replaced by `WRONG_PRODUCT_TYPE`.
+  """
+  WRONG_BUCKET
+
+  """
+  Response if the `Chemical` cannot be added because it is not compatible with the `ChemicalType` role specified for it (e.g. trying to add a sanitizer as an alkalinity increaser).
+  """
+  WRONG_PRODUCT_TYPE
+}
+
+"The response to the [getDevicesNeedingNewCartridges](../../operation/query/#getDevicesNeedingNewCartridges) query for a page of users\n"
+type GetDevicesNeedingNewCartridgesResults {
+  """The number of user results on this page"""
+  count: Int!
+
+  """The current page of results"""
+  page: Int!
+
+  """The user results"""
+  results: [NeedsNewCartridge]!
+}
+
+type RootQueryType {
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Gets all cartridges used by device_id
+  
+  #### Examples
+  
+  ```graphql
+  query($deviceId: Int) {
+    cartridgeHistory(deviceId: $deviceId) {
+      serialNumber
+      insertedAt
+      updatedAt
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "deviceId": 1
+  }
+  ```
+  """
+  cartridgeHistory(
+    """The id of the device for which to register the cartridge"""
+    deviceId: Int!
+  ): [Cartridge]
+
+  """
+  ***AUTH REQUIRED***
+  `Sutro App`  ✅ `Chatbot` ❌ `Diag Tool` ❌
+  Get the move sutro session by id
+  Example:
+  ```
+  query ($id: Int!) {
+    checkMoveSutroSession(id: $id) {
+      id
+    }
+  }
+  ```
+  With Params:
+  ```
+  {
+    "id": 12
+  }
+  ```
+  """
+  checkMoveSutroSession(
+    """The id of the move service session."""
+    id: Int!
+  ): MoveSutroSessions
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅ `Diag Tool` ❌
+  
+  Query the chemical products database, which contains all of the `Chemical`s that Sutro is able to provide recommendations for
+  
+  #### Examples
+  
+  Query all generic `Chemical`s:
+  
+  ```graphql
+  query($params: ChemicalQueryParams!) {
+    chemicals(params: $params){
+      behaviour
+      id
+      name
+      type
+      upc
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "params": {
+      "generic": true
+    }
+  }
+  ```
+  
+  Query all `Chemical`s with behaviour of "household_bleach":
+  
+  ```graphql
+  query($params: ChemicalQueryParams!) {
+    chemicals(params: $params){
+      behaviour
+      id
+      name
+      type
+      upc
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "params": {
+      "behaviour": "household_bleach"
+    }
+  }
+  ```
+  
+  Query all `Chemical`s with type of "sanitizer":
+  
+  ```graphql
+  query($params: ChemicalQueryParams!) {
+    chemicals(params: $params){
+      behaviour
+      id
+      name
+      type
+      upc
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "params": {
+      "type": "sanitizer"
+    }
+  }
+  ```
+  
+  Query all `Chemical`s compatible with a specific `PoolProfile`:
+  
+  ```graphql
+  query($params: ChemicalQueryParams!) {
+    chemicals(params: $params){
+      behaviour
+      id
+      name
+      type
+      upc
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "params": {
+      "profileId": "1"
+    }
+  }
+  ```
+  
+  Query `Chemical`s to find those that match the UPC "035186201378":
+  
+  ```graphql
+  query($params: ChemicalQueryParams!) {
+    chemicals(params: $params) {
+      behaviour
+      id
+      name
+      type
+      upc
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "params": {
+      "upc": "035186201378"
+    }
+  }
+  ```
+  """
+  chemicals(
+    """
+    If provided, resolves to `Chemical`s who match the given `ChemicalQueryParams`.
+    """
+    params: ChemicalQueryParams
+
+    """
+    [DEPRECATED] If provided, resolves to `Chemical`s whose UPC closely matches the string provided.
+    """
+    upc: String
+  ): [Chemical]!
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Get the chemical amounts used in the given time range
+  
+  #### Examples
+  
+  ```graphql
+  
+  ```
+  
+  Query how many and what kinds of chemicals were used in the last week with query variables:
+  
+  ```json
+  {
+    "userEmail": "olives@hummus.com",
+    "startDate": "2021-07-16 02:06:52.048971Z"
+  }
+  ```
+  
+  Query how many and what kinds of chemicals were used since the user setup up their Sutro with query variables:
+  
+  ```json
+  {
+    "userEmail": "tomato@bread.com",
+    "sinceSetup": true
+  }
+  ```
+  """
+  chemicalsUsed(
+    """Optional: The ID of the pool to return chemical usage data for."""
+    poolId: ID
+
+    """
+    If provided, all chemicals used since the time the Sutro was installed will be returned.
+    """
+    sinceSetup: Boolean
+
+    """Return readings from this date and later if provided."""
+    startDate: DateTime
+
+    """The email of the `SutroUser` to return chemical usage data for."""
+    userEmail: String!
+  ): [ChemicalUsed]
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅ `Diag Tool` ✅
+  
+  Query the default pool profile.
+  
+  #### Examples
+  
+  Query the reading target measurements of the default profile
+  
+  ```graphql
+  query {
+    defaultPoolProfile {
+      id
+      alkalinityTarget
+      chlorineTarget
+      phTarget
+    }
+  }
+  ```
+  """
+  defaultPoolProfile: PoolProfile!
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅  `Diag Tool` ✅
+  
+  Get the current test intervals, with pending updates being ignored.
+  
+  #### Examples
+  
+  ```graphql
+  query($userEmail: String, $deviceId: ID) {
+    getCurrentTestTimes(userEmail: $userEmail, deviceId: $deviceId) {
+      hours
+      status
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "userEmail": "bob@mysutro.com"
+  }
+  ```
+  
+  OR
+  
+  ```json
+  {
+    "deviceId": 5
+  }
+  ```
+  """
+  getCurrentTestTimes(
+    """
+    The id of the device to get reading times for. Provided instead of the `user_email` argument
+    """
+    deviceId: ID
+
+    """
+    The email of the user to get the current test times for. Should only be used if calling with a Diagnostics token.
+    """
+    userEmail: String
+  ): TestTimesResponse
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅ `Third Party (Jacuzzi)` ✅
+  
+  Devices are returned from this query when they...
+  * have received a cartridge count in the last X days, where X is provided in the parameters
+  * have a cartridge count within the provided range
+  * have an active subscription
+  * are active and online
+  
+  #### Jacuzzi Format
+  
+  Data will be available both in these fields and through other fields with standard naming conventions.
+  
+  fn = First name
+  ln = Last name
+  c = Cell phone
+  em = Email
+  hid = Hub ID
+  mid = Monitor ID
+  tr = Test remaining
+  el = Eligibly for a new shipment
+  lu = Last update time for the shipment data
+  
+  #### Examples
+  
+  ```graphql
+  query($page: Int, $pageSize: Int, $cartridgeCountMin: Int, $cartridgeCountMax: Int, $cartridgeCountNewerThan: DateTime, $activeSubscriptionOnly: Boolean, $onlineOnly: Boolean, $poolStore: String, $sssDevicesOnly: Boolean) {
+    getDevicesNeedingNewCartridges(page: $page, pageSize: $pageSize, cartridgeCountMin: $cartridgeCountMin, cartridgeCountMax: $cartridgeCountMax, cartridgeCountNewerThan: $cartridgeCountNewerThan, activeSubscriptionOnly: $activeSubscriptionOnly, onlineOnly: $onlineOnly, poolStore: $poolStore, sssDevicesOnly: $sssDevicesOnly) {
+      page
+      count
+      results {
+        fn
+        ln
+        c
+        em
+        hid
+        mid
+        tr
+        el
+        lu
+        firstName
+        lastName
+        phone
+        hubId
+        MonitorId
+        sutroEmail
+        rechargeEmail
+        backendDeviceId
+        cartridgeCharges
+        lastCartridgeCount
+        wentUnderThreshold_at
+        currentlyEligibleForShipment
+      }
+    }
+  }
+  ```
+  """
+  getDevicesNeedingNewCartridges(
+    """
+    If true, only returns devices when the associated subscription is active
+    """
+    activeSubscriptionOnly: Boolean
+
+    """Only return devices with this many cartridges or less"""
+    cartridgeCountMax: Int
+
+    """Only return devices with this many cartridges or more"""
+    cartridgeCountMin: Int
+
+    """
+    Only return devices that have received their latest cartridge count after this date
+    """
+    cartridgeCountNewerThan: DateTime
+
+    """If true, only returns online/active devices"""
+    onlineOnly: Boolean
+
+    """The page of results"""
+    page: Int
+
+    """The number of results to return per page"""
+    pageSize: Int
+
+    """If provided, only returns devices associated with this pool store"""
+    poolStore: String
+
+    """
+    If true, only returns devices that are handled by the Sutro Shipment Service
+    """
+    sssDevicesOnly: Boolean
+  ): GetDevicesNeedingNewCartridgesResults
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅ `Diag Tool` ❌
+  
+  Get the `Pool` and everything connected to this pool by pool id.
+  
+  
+  ```graphql
+  query ($poolId: Int!) {
+    getPool(poolId: $poolid) {
+      id
+      gallons
+      options
+      lastPoolStatusChange
+  	  lastStatusChange
+      poolProfile {
+        id
+        type
+        sanitizer
+      }
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```
+  {
+    "poolId": 1
+  }
+  ```
+  """
+  getPool(poolId: Int!): Pool
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅ `My.MySutro` ✅
+  
+  Get the payment methods that Recharge has on file for a given user
+  
+  #### Examples
+  
+  ```graphql
+  query($email: String!) {
+    getRechargePaymentMethods(email: $email) {
+      id
+      paymentDetails {
+        brand
+        expMonth
+        expYear
+        lastFour
+      }
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+   "email": "test@example.com"
+  }
+  ```
+  """
+  getRechargePaymentMethods(email: String!): [RechargePaymentMethod]
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅  `Diag Tool` ✅
+  
+  Get the most up-to-date test intervals, with pending updates being considered the most up-to-date.
+  
+  #### Examples
+  
+  ```graphql
+  query($userEmail: String, $deviceId: ID) {
+    getRecurringTestTimes(userEmail: $userEmail, deviceId: $deviceId) {
+      hours
+      status
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "userEmail": "bob@mysutro.com"
+  }
+  ```
+  
+  OR
+  
+  ```json
+  {
+    "deviceId": 5
+  }
+  ```
+  """
+  getRecurringTestTimes(
+    """
+    The id of the device to get reading times for. Provided instead of the `user_email` argument
+    """
+    deviceId: ID
+
+    """
+    The email of the user to get the recurring test times for. Should only be used if calling with a Diagnostics token.
+    """
+    userEmail: String
+  ): TestTimesResponse
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Gets historical info linked to a given device
+  
+  #### Examples
+  
+  ```graphql
+  query($deviceSerial: String, $types: [HistoryType!]!, $startDate: DateTime, $endDate: DateTime, $limit: Int) {
+    history(deviceSerial: $deviceSerial, types: $types, startDate: $startDate, endDate: $endDate, limit: $limit) {
+      historicalBatteryLevels {
+        value
+        insertedAt
+      }
+      historicalCartridgeCounts {
+        value
+        insertedAt
+      }
+      historicalTemperatures {
+        value
+        insertedAt
+      }
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+    {
+      "deviceSerial": "abcd:1234:qwer:5678",
+      "deviceId": 55,
+      "types": ["BATTERY_LEVEL", "CARTRIDGE_COUNT", "TEMPERATURE"],
+      "startDate": "2021-07-15 02:06:52.048971Z",
+      "endDate": "2021-07-16 02:06:52.048971Z",
+      "limit": 10
+    }
+  ```
+  
+  Or, use the deviceId like so...
+  
+   ```json
+    {
+      "deviceId": 55,
+      "types": ["BATTERY_LEVEL", "CARTRIDGE_COUNT", "TEMPERATURE"],
+      "startDate": "2021-07-15 02:06:52.048971Z",
+      "endDate": "2021-07-16 02:06:52.048971Z",
+      "limit": 10
+    }
+  ```
+  """
+  history(
+    """An alternative way to specify which device to get history for."""
+    deviceId: ID
+
+    """The serial number of the device you wish to view history for."""
+    deviceSerial: String
+
+    """
+    Return records from this date and earlier if provided. `startDate` is required if this param is used.
+    """
+    endDate: DateTime
+
+    """
+    If provided, it will return a maximum of this many records. Defaults to 1000 per type. The maximum is 10,000 per type.
+    """
+    limit: Int
+
+    """Return records from this date and later if provided."""
+    startDate: DateTime
+
+    """
+    A list of strings determining which types of history should be returned.
+    """
+    types: [HistoryType]
+  ): HistoryResult
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot`  ✅  `Diag Tool` ❌
+  
+  Get one home, as long as the home belongs to the user making the request. It is
+  designed to be used by the Sutro app when a user wants to view the details of one
+  of the homes on their list of homes.
+  
+  If `homeId` is not provided, it will get the primary home for the user.
+  
+  #### Examples
+  
+  ```graphql
+  query($homeId: ID!) {
+    home(homeId: $homeId){
+      id
+      name
+      image
+      isPrimary
+      user {
+        firstName
+        lastName
+        email
+      }
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "homeId": 55
+  }
+  ```
+  """
+  home(
+    """The id of the home to return"""
+    homeId: ID
+  ): HomeObject
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌  `Diag Tool` ✅
+  
+  Counts the number of manual readings (of a specified type) requested for a device either
+  within the last 24 hours or since the last full, completed service mode session, whichever is more recent.
+  
+  #### Example
+  
+  ```graphql
+  query($deviceId: Int!, $readingType: ReadingType!) {
+    manualReadingsInLastDay(deviceId: $deviceId, readingType: $readingType)
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "deviceId": 5,
+    "readingType": "FULL"
+  }
+  
+  ```
+  """
+  manualReadingsInLastDay(
+    """The id of the device to get manual readings for"""
+    deviceId: Int!
+
+    """The type of manual readings to count"""
+    readingType: ReadingTypeQuery!
+  ): Int
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅ `Diag Tool` ❌
+  
+  Query properties and associations of the user who is currently logged in.
+  
+  #### Examples
+  
+  Query basic properties of the user's profile:
+  
+  ```graphql
+  query {
+    me {
+      id
+      firstName
+      lastName
+      email
+      phone
+    }
+  }
+  ```
+  
+  Query properties of the user's `Hub` and `Device`:
+  
+  ```graphql
+  query {
+    me {
+      device {
+        batteryLevel
+        serialNumber
+        temperature
+      }
+      hub {
+        serialNumber
+      }
+    }
+  }
+  ```
+  
+  Query settings of the user's `ChemicalProfile`:
+  
+  ```graphql
+  query {
+    me {
+      pool {
+        chemicalProfile {
+          id
+          primarySanitizer {
+            id
+            image
+            name
+          }
+          secondarySanitizer {
+            id
+            image
+            name
+          }
+          phUp {
+            id
+            image
+            name
+          }
+          phDown {
+            id
+            image
+            name
+          }
+          alkalinityUp {
+            id
+            image
+            name
+          }
+        }
+      }
+    }
+  }
+  ```
+  Query cartridge shipment data
+  
+  ```
+  query {
+    {
+      me {
+        id
+        email
+        homes{
+          id
+          name
+          address{
+            id
+            addressLine_1
+            addressLine_2
+            city
+            state
+            postalCode
+            country
+          }
+          pools{
+            id
+            name
+            equipment_profile{
+             id
+              poolType
+            }
+            hub{
+              id
+              serialNumber
+              releaseGroup
+            }
+            device{
+              id
+              serialNumber
+              subscription{
+                subscriptionType
+                rechargeSubscriptionId
+              }
+              deviceSusbcriptionSnapshots{
+                subscriptionType
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  ```
+  """
+  me: User
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅ `Diag Tool` ✅
+  
+  Query the available pool profiles.
+  
+  #### Examples
+  
+  Query all pool profiles with type: POOL
+  
+  ```graphql
+  query($profileType: PoolType) {
+    poolProfiles(profileType: $profileType) {
+      id
+      type
+      sanitizer
+      sanitizerName
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "profileType": "POOL"
+  }
+  ```
+  """
+  poolProfiles(
+    """The type of pool to fetch profiles for"""
+    profileType: PoolType
+  ): [PoolProfile]!
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ❌ `Third Party Access` ✅ (Sutro Central)
+  
+  Get a list of users associated with a given pool store or pool stores.
+  
+  #### Examples
+  
+  Query all users associated with 'Cool Pools'
+  
+  ```graphql
+  
+  ```
+  
+  with query variables:
+  
+  ```json
+  
+  ```
+  """
+  poolStoreUsers(
+    """The store or stores you want to see users for."""
+    poolStores: [String]
+  ): [User]
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅ `Diag Tool` ✅
+  
+  Query the available sanitizers.
+  
+  #### Examples
+  
+  Query all sanitizers with type: POOL
+  
+  ```graphql
+  query($profileType: PoolType) {
+    sanitizers(profileType: $profileType) {
+      default
+      sanitizers {
+        value
+        name
+      }
+      options {
+        value
+        name
+      }
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "profileType": "POOL"
+  }
+  ```
+  """
+  sanitizers(
+    """The type of pool to fetch profiles for"""
+    profileType: PoolType
+  ): SanitizerResponse!
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Search MES data using a query string. Can search across all fields or just specified ones.
+  
+  #### Examples
+  
+  Query basic info of the first 1000 users (page 0)
+  
+  ```graphql
+  query($queryString: String!, $includedFields: MesSearchFieldType, $page: Int, $pageSize: Int) {
+    searchMesData(queryString: $queryString, includedFields: $includedFields, page: $page, pageSize: $pageSize)
+      page
+      results {
+        id
+        moName
+        psn
+        cartoonSn
+        deviceSn
+        deviceId
+        hubSn
+        hubId
+        wifiMac
+        sim
+        hasBeenSetUp
+        poolStore {
+          id
+          name
+        }
+        insertedAt
+        updatedAt
+      }
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "page": 0,
+    "pageSize": 50,
+    "queryString": "123",
+    "includedFields": ["HUB_ID", "HUB_SN", "DEVICE_ID"]
+  }
+  ```
+  """
+  searchMesData(
+    """
+    Whether or not to do a deeper search for each MES record if there are less than 10 records
+    """
+    getHistory: Boolean
+
+    """
+    Specify which string fields to search in. Defaults to all available fields
+    """
+    includedFields: [MesSearchFieldType]
+
+    """The page of `MESData`s to request results for"""
+    page: Int
+
+    """The max amount of records on a returned page"""
+    pageSize: Int
+
+    """Search across multiple string fields with this query string"""
+    queryString: String!
+  ): MesSearchResults
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅ `Diag Tool` ❌
+  
+  Select the primary pool store from Sutro Central
+  
+  
+  ```graphql
+  query ($page: Int, $tokenID: String, $search: String) {
+    selectPrimaryPoolStore(page: $page, tokenID: $tokenID, search: $search) {
+      count
+      previous
+      next
+      poolStores {
+        id
+        name
+      }
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```
+  {
+    "page":1,
+    "tokenID": "some-randon-generated-string"
+    "search": ""
+  }
+  ```
+  """
+  selectPrimaryPoolStore(page: Int, poolId: ID, search: String, tokenId: String): PoolStoresResult
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅ `Third-Party` ✅
+  
+  Query properties and associations of any user by their id or their email.
+  
+  #### Examples
+  
+  Query basic properties of the user's profile:
+  
+  ```graphql
+  query($id: ID, $email: String, $rechargeSubscriptionEmail: String) {
+    user(id: $id, email: $email, rechargeSubscriptionEmail: $rechargeSubscriptionEmail) {
+      id
+      firstName
+      lastName
+      email
+      phone
+    }
+  }
+  ```
+  
+  Query properties of the user's `Hub` and `Device`:
+  
+  ```graphql
+  query($id: ID, $email: String, $rechargeSubscriptionEmail: String) {
+    user(id: $id, email: $email, rechargeSubscriptionEmail: $rechargeSubscriptionEmail) {
+      device {
+        batteryLevel
+        id
+        serialNumber
+        temperature
+      }
+      hub {
+        id
+        serialNumber
+        ssid
+      }
+    }
+  }
+  ```
+  """
+  user(
+    """The email of the `SutroUser` to query the full data graph for"""
+    email: String
+
+    """The `id` of the `SutroUser` to query the full data graph for"""
+    id: ID
+
+    """
+    The Recharge subscription email of the `SutroUser` to query the full data graph for
+    """
+    rechargeSubscriptionEmail: String
+  ): User
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ✅ `Diag Tool` ✅
+  
+  Query basic info of all users, 1000 users at a time, from most recently added to oldest.
+  
+  #### Examples
+  
+  Query basic info of the first 50 users (page 0)
+  
+  ```graphql
+  query ($page: Int, $pageSize: Int) {
+    users(page: $page, pageSize: $pageSize) {
+      count
+      page
+      results {
+        email
+        name
+        deviceSerial
+        hubSerial
+        userId
+      }
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "page": 0
+  }
+  ```
+  
+  If the `count` is less than 1000, you've reached the final page.
+  
+  ```graphql
+  query($page: Int, $readingsEnabled: Boolean, $updatedSince: String, $subscriptionType: String, $queryString: String, $includedFields: [UserSearchFieldType], $activeSubscriptionOnly: Boolean) {
+    users(page: $page, readingsEnabled: $readingsEnabled, updatedSince: $updatedSince, subscriptionType: $subscriptionType, queryString: $queryString, includedFields: $includedFields, activeSubscriptionOnly: $activeSubscriptionOnly) {
+      count
+      page
+      results {
+        deviceSerial
+        email
+        hubSerial
+        name
+        userId
+        releaseGroup
+        updatedAt
+        mesData {
+          id
+          moName
+          psn
+          cartoonSn
+          deviceSn
+          deviceId
+          hubSn
+          hubId
+          wifiMac
+          sim
+          hasBeenSetUp
+          poolStore {
+            id
+            name
+          }
+          insertedAt
+          updatedAt
+        }
+      }
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  Query basic info and MES data of the second 1000 users (page 1),
+  that have readings enable for their device and have had an update to
+  the `SutroUser`, `Device`, or `Hub` since 2021-07-16.
+  
+  ```json
+  {
+    "page": 1,
+    "readingsEnabled": true,
+    "updatedSince": "2021-07-16 02:06:52.048971Z",
+    "subscriptionType": "NO_SUBSCRIPTION"
+  }
+  ```
+  
+  Get page 0 of results where the first and last name of the sutro user contain the string "bee"
+  
+  ```json
+  {
+    "page": 0,
+    "pageSize": 50,
+    "queryString": "bee",
+    "includedFields": ["NAME"],
+    "activeSubscriptionOnly": true
+  }
+  ```
+  """
+  users(
+    """
+    Filters users that have an active or uninitialized state in subscriptions
+    """
+    activeSubscriptionOnly: Boolean
+
+    """Specify which string fields to search in"""
+    includedFields: [UserSearchFieldType]
+
+    """
+    Filters users that have an active or uninitialized state in subscriptions
+    """
+    includedUserTypes: [UserSearchUserType]
+
+    """The page of `SutroUser`s to request results for"""
+    page: Int
+
+    """The number of results to return per page"""
+    pageSize: Int
+
+    """Search across multiple string fields with this query string"""
+    queryString: String
+
+    """Filters returned users based on if their device has readings enabled"""
+    readingsEnabled: Boolean
+
+    """Filters returned users based on which subscription class they have"""
+    subscriptionClass: String
+
+    """Filters returned users based on how recently they have been updated"""
+    updatedSince: DateTime
+  ): UserSearchResults
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Returns all of the registered webhook listeners a user has
+  
+  #### Example
+  
+  ```graphql
+  query {
+    webhookListeners {
+      deviceSerial
+      listeners {
+        id
+        name
+        webhookUrl
+        insertedAt
+        updatedAt
+        device {
+          serialNumber
+        }
+      }
+    }
+  }
+  ```
+  """
+  webhookListeners: [WebhookListenerGroup]
+}
+
+"""
+Settings options for which sorts of readings the user would like to receive notifications about
+"""
+enum NotificationsReadingType {
+  """Send a notification for a reading with or without recommendations"""
+  ALL_READINGS
+
+  """Never send a notification for readings"""
+  NONE
+
+  """
+  Only send a notification if there are recommendations with the latest reading
+  """
+  READINGS_WITH_RECOMMENDATIONS
+}
+
+"An object containing information about SutroAI's analysis for one specific metric.\n"
+type RawAnalysisMetricResult {
+  """Whether this given metric is high, low, or okay."""
+  decision: String
+
+  """SutroAI's recommendation, if any."""
+  recommendation: RawRecommendation
+}
+
+"The response to the [users](../../operation/query/#users) query for a page of users\n"
+type UserSearchResults {
+  """The number of user results on this page"""
+  count: Int!
+
+  """The current page of results"""
+  page: Int!
+
+  """The user results"""
+  results: [UserSearchResult]!
+}
+
+"A display type for a `HistoricalCartridgeCount`\n"
+type HistoricalCartridgeCount {
+  insertedAt: DateTime
+  value: Int!
+}
+
+type Hub {
+  """The state of the battery charger in this `Hub`"""
+  chargerStatus: ChargerStatusType
+
+  """
+  The method of connectivity the `Hub` is currently using to speak with the back-end
+  """
+  connectivityType: ConnectivityType
+
+  """The firmware version of this `Hub`"""
+  currentFirmwareVersion: String
+  id: ID!
+
+  """The time of the last message received from this `Hub`"""
+  lastMessage: DateTime
+  latestMoveSutroSession: MoveSutroSessions
+
+  """Whether or not this `Hub` is communicating over AWS IoT"""
+  online: Boolean
+
+  """
+  The current or last completed `OtaSession` associated with this `Hub`, if there is any
+  """
+  otaSession: OtaSession
+  releaseGroup: ReleaseGroupType
+
+  """The unique serial number for this `Hub`"""
+  serialNumber: String!
+
+  """
+  The name of the WiFi network this device has been configured to communicate over
+  """
+  ssid: String
+}
+
+enum SubscriptionState {
+  ACTIVE
+  CANCELLED
+  EXPIRING
+  PAYMENT_FAILED
+  UNINITIALIZED
+}
+
+"A mapping of `Chemical`s associated with a user's `Pool`, organized into `ProfileBucket`s based on the `Chemical`'s roles.\n\nEach user is expected to fill out their `ChemicalProfile` during onboarding. Users can assign a `Chemical` to their profile by its UPC with [setChemical](/../../mutation/setChemical) and [addChemical](/../../mutation/addChemical).\n\nA `ChemicalProfile` is necessary for SutroAI to produce `Recommendation`s, and if a user is missing their profile or has an incomplete one, SutroAI will fill in with the following defaults:\n\nType | Generic Default\n-----|----------------\nPrimary Sanitizer | Liquid Chlorine / Household Bleach\nSecondary Sanitizer | (Unused)\npH Up | Sodium Carbonate\npH Down | Muriatic Acid 15%\nAlkalinity Up | Sodium Bicarbonate\n"
+type ChemicalProfile {
+  """The alkalinity increaser `Chemical` the user has set, if they have one"""
+  alkalinityUp: Chemical
+  id: ID!
+
+  """The pH decreaser `Chemical` the user has set, if they have one"""
+  phDown: Chemical
+
+  """The pH increaser `Chemical` the user has set, if they have one"""
+  phUp: Chemical
+
+  """The primary sanitizer `Chemical` the user has set, if they have one"""
+  primarySanitizer: Chemical
+
+  """The secondary sanitizer `Chemical` the user has set, if they have one"""
+  secondarySanitizer: Chemical
+}
+
+"Input options type expected for the [updatePool](../../operation/query/#updatepool) mutation\n"
+input UpdatePoolOptions {
+  """The name of the Pool"""
+  name: String
+
+  """Any updated optional sanitizers the `Pool` uses"""
+  options: [PoolProfileOption]
+
+  """The id of the Pool"""
+  poolId: ID
+
+  """The updated sanitizer type the `Pool` uses"""
+  sanitizer: PoolProfileSanitizer!
+
+  """The updated structure type of the `Pool`"""
+  type: PoolType!
+
+  """The updated volume of the `Pool`, in gallons"""
+  volume: Float!
+}
+
+type RootMutationType {
+  """
+  ***AUTH REQUIRED***
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  Dissociates a `Home` given an id, as long as the id belongs
+  to the currently logged-in user and the `Home`
+  is not connected to a pool.
+  #### Examples
+  ```graphql
+  mutation ($homeId: ID!){
+    dissociateHome(homeId: $homeId) {
+      id
+    }
+  }
+  ```
+  with query variables:
+  ```json
+  {
+    "homeId": 44
+  }
+  ```
+  """
+  dissociateHome(homeId: ID!): HomeObject
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Refresh various statuses of the `SutroUser`'s `Hub` and `Device`.
+  As this request interfaces with the user's hardware, it may take
+  up to 16 seconds to respond to the client as it waits to hear
+  back, and you must wait for the first request to complete before
+  initiating a second one.
+  
+  It can be used with or without a device id. It defaults to the first
+  device for a user if none is specified.
+  
+  ```
+  mutation {
+    refreshHardwareStatus {
+      id
+      device {
+        id
+        lastMessage
+      }
+      hub {
+        id
+        chargerStatus
+      }
+    }
+  }
+  ```
+  
+  ```
+  mutation ($deviceId: ID) {
+    refreshHardwareStatus(deviceId: $deviceId) {
+      id
+      device {
+        id
+        lastMessage
+      }
+      hub {
+        id
+        chargerStatus
+      }
+    }
+  }
+  ```
+  
+  With params:
+  
+  ```
+  {
+    "deviceId": 5
+  }
+  ```
+  """
+  refreshHardwareStatus(deviceId: ID): User
+
+  """
+  ***AUTH REQUIRED***
+  
+  Edits an address for the currently logged-in user
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($addressId: ID!, $addressLine_1: String, $addressLine_2: String, $city: String, $state: String, $postalCode: String, $country: String, $homeId: ID, $latitude: Float, $longitude: Float){
+    editAddress(addressId: $addressId, addressLine_1: $addressLine_1, addressLine_2: $addressLine_2, city: $city, state: $state, postalCode: $postalCode, country: $country, homeId: $homeId, deviceId: $deviceId, latitude: $latitude, longitude: $longitude) {
+      id
+      addressLine_1
+      addressLine_2
+      city
+      state
+      postalCode
+      country
+      latitude
+      longitude
+      home {
+        id
+        name
+      }
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "addressId": 1,
+    "addressLine_1": "456 Elm St",
+    "addressLine_2": "Unit 5C",
+    "city": "New Exampletown",
+    "state": "NY",
+    "postalCode": "67890",
+    "country": "US",
+    "latitude": 55.3,
+    "longitude": 99.52,
+    "isShippingAddress": true,
+    "homeId": 5
+  }
+  ```
+  """
+  editAddress(addressId: ID!, addressLine1: String, addressLine2: String, city: String, country: String, homeId: ID, isShippingAddress: Boolean, latitude: Float, longitude: Float, postalCode: String, state: String): Address
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ❌ `my.mySutro` ✅
+  
+  Pauses and unpauses readings for all devices that belong to a SutroUser
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($sutroEmail: String!, $operation: String!){
+    toggleDeviceReadings(sutroEmail: $sutroEmail, operation: $operation)
+  }
+  ```
+  
+  with query variables:
+  
+  ```
+  {
+    "sutroEmail": "email@email.com",
+    "operation": "pause" or "resume"
+  }
+  ```
+  """
+  toggleDeviceReadings(operation: ToggleReadingTypes!, sutroEmail: String!): String
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅ `my.mySutro` ✅
+  
+  Opens a closed pool.
+  - Clears the `will_reopen_on` date
+  - Populates the `reopened_on` date
+  - Resumes the Recharge subscription
+  - Creates a history entry
+  
+  #### Examples
+  
+  ```graphql
+    mutation ($sutroEmail: String!, $poolId: Int){
+    openPool(sutroEmail: $sutroEmail, poolId: $poolId) {
+      id
+      reopenDate
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```
+  {
+    "sutroEmail": "person@example.com"
+    "poolId": "1"
+  }
+  ```
+  """
+  openPool(poolId: Int, sutroEmail: String!): Pool
+
+  """
+  Log in an existing user and request a new OAUTH token.
+  
+  #### Examples
+  
+  Log in user "Tester McTesterson":
+  
+  ```graphql
+  mutation ($email: String!, $password: String!) {
+    loginOauth(email: $email, password: $password) {
+      user {
+        email
+      }
+      token
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "email": "thisisatest@testalot.com",
+    "password": "testpassword1",
+  }
+  ```
+  """
+  loginOauth(
+    email: String!
+    language: Language
+
+    """User's password (stripped from logs)"""
+    password: String!
+  ): AuthResult
+
+  """
+  !app-only
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Log messages from the app
+  """
+  log(message: String!): StatusResult
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅ `Diag Tool` ❌
+  
+  Marks that the treatment of a `Recommendation` has been completed, or un-marks it as completed with an argument of `null`.
+  
+  #### Examples
+  
+  Marks `Recommendation` with id "25" as completed on 09/20/2020 at 22:32:40 UTC:
+  
+  ```graphql
+  mutation ($recommendationId: ID!, $completedAt: DateTime) {
+    completeRecommendation(recommendationId: $recommendationId, completedAt: $completedAt) {
+      success
+      completedAt
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "recommendationId": "25",
+    "completedAt": "2020-09-20T22:32:40.000Z"
+  }
+  ```
+  """
+  completeRecommendation(
+    """
+    The timestamp to mark for when this `Recommendation` was completed, in UTC. If `null`, the `Recommendation` will be marked as incomplete.
+    """
+    completedAt: DateTime
+
+    """The `id` of the `Recommendation` to mark as completed"""
+    recommendationId: ID!
+  ): CompleteRecommendationResult
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅ `Diag Tool` ❌
+  
+  Change the password of the user who is currently logged in.
+  """
+  updateUserPassword(
+    """The new password to set (stripped from logs)"""
+    password: String!
+  ): StatusResult
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Dissociate devices and hubs
+  """
+  dissociateDevicesAndHubs(devices: [String], hubs: [String]): DevicesAndHubsLists
+
+  """
+  Log in an existing user and request a new JWT token.
+  
+  #### Examples
+  
+  Log in user "Tester McTesterson":
+  
+  ```graphql
+  mutation ($email: String!, $password: String!) {
+    login(email: $email, password: $password) {
+      user {
+        email
+      }
+      token
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "email": "thisisatest@testalot.com",
+    "password": "testpassword1",
+  }
+  ```
+  """
+  login(
+    email: String!
+    language: Language
+
+    """User's password (stripped from logs)"""
+    password: String!
+  ): AuthResult
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅ `Diag Tool` ❌
+  
+  Unassigns the `Chemical` product assigned for the provided `role` from the `ChemicalProfile` of the user who is currently logged in.
+  It can take a poolId to target a specific pool and its chemical profile. Else, it defaults to the chemical profile of the first pool
+  the user has.
+  
+  #### Examples
+  
+  Unassign the primary sanitizer from my `ChemicalProfile`:
+  
+  ```graphql
+  mutation ($role: AssignableChemicalType!, $poolId: ID) {
+      unassignChemical(role: $role, poolId: $poolId) {
+        id
+        primarySanitizer {
+          upc
+        },
+        secondarySanitizer{
+          upc
+        },
+        phUp{
+          upc
+        },
+        phDown{
+          upc
+        },
+        alkalinityUp{
+          upc
+        }
+      }
+    }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "role": "PRIMARY_SANITIZER",
+    "poolId": 25
+  }
+  ```
+  """
+  unassignChemical(
+    """The id of the pool which will have its `ChemicalProfile` changed"""
+    poolId: ID
+
+    """
+    The name of the `ChemicalType` role to unassign on the user's `ChemicalProfile`.
+    """
+    role: AssignableChemicalType!
+  ): ChemicalProfile
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅  `Diag Tool` ✅
+  
+  Schedules a change to the periodic messages for a given device.
+  The change will be applied by the MessageIntervalUpdate worker
+  when it runs, which is once every 24 hours.
+  
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($hours: [Int!], $userEmail: String, $deviceId: ID, $bypassHourSpaceCheck: Boolean) {
+    setRecurringTestTimes(hours: $hours, userEmail: $userEmail, deviceId: $deviceId, bypassHourSpaceCheck: $bypassHourSpaceCheck) {
+      hours
+      status
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "hours": [5, 10, 15],
+    "userEmail": "bob@mysutro.com",
+    "bypassHourSpaceCheck": true
+  }
+  ```
+  
+  or deviceId instead of userEmail
+  
+  ```json
+  {
+    "hours": [5, 10, 15],
+    "deviceId": 5,
+    "bypassHourSpaceCheck": true
+  }
+  ```
+  """
+  setRecurringTestTimes(
+    """Skip the check to see if these hours are spaced out enough"""
+    bypassHourSpaceCheck: Boolean
+
+    """
+    The id of the device to update reading times for. Provided instead of the `user_email` argument
+    """
+    deviceId: ID
+
+    """
+    Format: [A, B, C] where A is the first partial reading, B is the second partial reading, and C is the full reading
+    """
+    hours: [Int]!
+
+    """The user to update times for, if calling this mutation from the DMT"""
+    userEmail: String
+  ): TestTimesResponse
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅ `Partner's Portal` ✅
+  
+  Syncs a `Pool` given an id, to SutroCentral.
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($poolId: Int!){
+    syncPoolSutroCentral(poolId: $poolId) {
+      phoneNumber
+      name
+      homeId
+      poolId
+      waterType
+      poolVolume
+      sanitizer
+      chemicalsData
+      filtrationType
+      poolType
+      linerType
+      waterSource
+      otherWaterSource
+      sunCover
+      winterCover
+      waterfall
+      lights
+      heater
+      minOzUV
+      minOzUVOptions
+      interior
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "poolId": 1
+  }
+  ```
+  """
+  syncPoolSutroCentral(poolId: Int!): SutroCentralPoolResponse
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Force the latest `CalibrationSession` for the provided `Device` to stop and timeout on the server
+  
+  #### Examples
+  
+  Forces the latest calibration session of the device with serial number "123456789" to stop
+  
+  ```graphql
+  mutation ($deviceSerial: String!) {
+    forceStopCalibration(deviceSerial: $deviceSerial) {
+      id
+      status
+      step
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "deviceSerial": "123456789"
+  }
+  ```
+  
+  Forces the calibration with the id "555" to stop
+  
+  ```graphql
+  mutation ($deviceSerial: String!) {
+    forceStopCalibration(deviceSerial: $deviceSerial) {
+      id
+      status
+      step
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "sessionId": "555"
+  }
+  ```
+  """
+  forceStopCalibration(
+    """
+    The serial number of the device whose `CalibrationSession` should be forced to stop.
+    """
+    deviceSerial: String!
+  ): CalibrationSession
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Mark a device or hub as RMA'd. If a hub is provided, the device must be nil and vice versa.
+  
+  #### Examples
+  
+  RMA (return) a device with  "123456789"
+  
+  ```graphql
+  mutation ($deviceSerial: String, $hubSerial: String, $reason: String!) {
+    rmaHardware(deviceSerial: $deviceSerial, hubSerial: $hubSerial, reason: $reason) {
+      devices {
+        lifecycleStage
+        serialNumber
+      }
+      hubs {
+        serialNumber
+      }
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "deviceSerial": "123456789",
+    "reason": "It smells like cat food"
+  }
+  ```
+  """
+  rmaHardware(
+    """The serial number of the device to RMA"""
+    deviceSerial: String
+
+    """The serial number of the hub to RMA"""
+    hubSerial: String
+
+    """The reason the hardware is being RMA'd"""
+    reason: String!
+  ): DevicesAndHubsLists
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Open a new `ServiceSession` with a `ReadinessCheck` for the `Device` of the currently logged in user
+  
+  ```graphql
+  mutation($deviceId: Int) {
+    createServiceModeSessionReadinessCheck(deviceId: $deviceId) {
+      step
+      status
+    }
+  }
+  ```
+  with query variables:
+  
+  ```json
+  {
+    "deviceId": 1
+  }
+  ```
+  """
+  createServiceModeSessionReadinessCheck(
+    """The id of the Device for which service mode would start"""
+    deviceId: Int
+  ): ServiceSession
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Updates an existing webhook listener.
+  
+  #### Examples
+  
+  ```graphql
+  mutation($listenerId: Int!, $name: String, $webhookUrl: String, $bearerToken: String) {
+    updateWebhookListener(
+      listenerId: $listenerId,
+      name: $name,
+      webhookUrl: $webhookUrl,
+      bearerToken: $bearerToken
+    ) {
+      name
+      webhookUrl
+      bearerToken
+      device {
+        serialNumber
+      }
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "listenerId": 1,
+    "name": "Updated Webhook",
+    "webhookUrl": "https://updated-example.com/webhook",
+    "bearerToken": "updated-auth-token"
+  }
+  ```
+  """
+  updateWebhookListener(
+    """New authentication token for the webhook listener"""
+    bearerToken: String
+
+    """The ID of the listener to be updated"""
+    listenerId: Int!
+
+    """New name of the webhook listener"""
+    name: String
+
+    """New URL where webhook events will be sent"""
+    webhookUrl: String
+  ): WebhookListener
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Gives a user free months of subscription time, sets the status to `active`,
+  and updates the next charge date on Recharge.
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($sutroUserEmail: String, $rechargeSubscriptionEmail: String, $freeMonths: Int, $lastRechargeOrderDate: DateTime, $rechargeSubscriptionId: String){
+      giveFreeMonths(sutroUserEmail: $sutroUserEmail, rechargeSubscriptionEmail: $rechargeSubscriptionEmail, freeMonths: $freeMonths, lastRechargeOrderDate: $lastRechargeOrderDate, rechargeSubscriptionId: $rechargeSubscriptionId) {
+        rechargeSubscriptionEmail
+        lastRechargeOrderDate
+        subscriptionType
+        state
+        user {
+          email
+        }
+      }
+    }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "sutroUserEmail": "bob@mysutro.com",
+    "freeMonths": 5
+  }
+  ```
+  
+  This will find a Sutro user with the email `bob@mysutro.com` and move the `last_recharge_order_date` on
+  his subscription four months ahead. The next charge date on Recharge will be moved five months ahead.
+  
+  ```json
+  {
+    "rechargeSubscriptionEmail": "bob@mysutro.com",
+    "lastRechargeOrderDate": "2021-07-16 02:06:52.048971Z"
+  }
+  ```
+  
+  This will find a Subscription belonging to a user with the Recharge email `bob@mysutro.com` and move
+  the `last_recharge_order_date` on his subscription to the provided date. The next charge date on Recharge
+  will be moved one month ahead of the provided date.
+  
+  ```json
+  {
+    "rechargeSubscriptionId": "44123",
+    "lastRechargeOrderDate": "2021-07-16 02:06:52.048971Z"
+  }
+  ```
+  
+  This will find a Subscription with id 44 and move
+  the `last_recharge_order_date` on his subscription to the provided date. The next charge date on Recharge
+  will be moved one month ahead of the provided date.
+  """
+  giveFreeMonths(
+    """The number of free months to give the user."""
+    freeMonths: Int
+
+    """The new last Recharge order date for the user."""
+    lastRechargeOrderDate: DateTime
+
+    """Identifies the subscription to give free months to."""
+    rechargeSubscriptionEmail: String
+
+    """
+    Identifies the subscription by recharge_subscription_id to give free months to.
+    """
+    rechargeSubscriptionId: ID
+
+    """Identifies the subscription to give free months to."""
+    sutroUserEmail: String
+  ): RechargeSubscription
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Sets the targeted address to a shipping address for the currently logged-in user.
+  If the user already has a shipping address for the target home, it should change
+  the shipping address to the targeted address.
+  
+  #### Examples
+  
+  ```graphql
+    mutation ($addressId: ID!, $homeId: ID){
+  setShippingAddress(addressId: $addressId, homeId: $homeId) {
+    id
+    addressLine_1
+    addressLine_2
+    city
+    state
+    postalCode
+    country
+    home {
+      id
+      name
+    }
+    isShippingAddress
+  }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "addressId": 123,
+    "homeId": 45
+  }
+  ```
+  """
+  setShippingAddress(addressId: ID!, homeId: ID!): Address
+
+  """
+  ***AUTH REQUIRED***
+  `Sutro App`  ✅ `Chatbot` ❌ `Diag Tool` ✅
+  Set Device health to needs_service.
+  
+  ```graphql
+  mutation($deviceId: Int) {
+    setDeviceNeedsService(deviceId: $deviceId) {
+      id
+    }
+  }
+  ```
+  with query variables:
+  ```json
+  {
+    "deviceId": 1
+  }
+  ```
+  """
+  setDeviceNeedsService(deviceId: Int): Device
+
+  """
+  ***AUTH REQUIRED***
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  Notify user when there is a comment on his Zendesk ticket
+  #### Examples
+  ```graphql
+  mutation ($params: ZendeskNotificationParams!) {
+    zendeskNotification(params: $params) {
+      results {
+        sentToUser
+        success
+        message
+      }
+    }
+  }
+  ```
+  To send a push notification to a user:
+  ```json
+  {
+    "params": {
+      "userEmail": "email@email.com",
+      "ticketUrl": "http://localhost:4000",
+      "ticketLatestComment": "Some comment",
+      "ticketTitle": "The title",
+      "ticketId": 1,
+    }
+  }
+  ```
+  """
+  zendeskNotification(
+    """Send a notification to the owners of these devices"""
+    params: ZendeskNotificationParams!
+  ): SendNotificationResult
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Updates the setting for the user who is currently logged in for reading notifications type.
+  """
+  updateSettingReadingNotificationsType(
+    """The target pool"""
+    poolId: ID
+
+    """The new settings option"""
+    type: NotificationsReadingType!
+  ): Settings
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅ `Partner's Portal` ✅
+  
+  Syncs a `Home` given an id, to SutroCentral.
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($homeId: Int!){
+    syncHomeSutroCentral(homeId: $homeId) {
+      homeNickname
+      phoneNumber
+      address
+      country
+      city
+      state
+      postalCode
+      homeId
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "homeId": 1
+  }
+  ```
+  """
+  syncHomeSutroCentral(homeId: Int!): SutroCentralHomeResponse
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅ `My.MySutro` ✅
+  
+  Reactivates a cancelled subscription
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($rechargeSubscriptionId: String!, $rechargeEmail: String!) {
+    reactivateSubscription(rechargeSubscriptionId: $rechargeSubscriptionId, rechargeEmail: $rechargeEmail) {
+      subscriptionReactivated
+      message
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "rechargeSubscriptionId": "456",
+    "rechargeEmail": "mysutro@test.com"
+  }
+  ```
+  """
+  reactivateSubscription(rechargeEmail: String!, rechargeSubscriptionId: String!): ReactivateSubscriptionResult
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅ `Third-Party` (Sutro Central) ✅
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($poolId: ID!, $params: EquipmentProfileParams!) {
+    upsertEquipmentProfile(poolId: $poolId, params: $params) {
+      id
+      poolType
+      linerType
+      filterType
+      waterSource
+      waterType
+      hasSunCover
+      hasWinterCover
+      hasWaterfall
+      hasLights
+      hasHeater
+      insertedAt
+      updatedAt
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "poolId": 5,
+    "params": {
+      "sutroEmail": "hey@mysutro.com",
+      "poolType": "IN_GROUND",
+      "linerType": "FIBERGLASS",
+      "filterType": "SAND",
+      "waterSource": "CITY",
+      "waterType": "HARD",
+      "hasSunCover": true,
+      "hasWinterCover": true,
+      "hasWaterfall": true,
+      "hasLights": true,
+      "hasHeater": true
+    }
+  }
+  ```
+  """
+  upsertEquipmentProfile(params: EquipmentProfileParams!, poolId: Int): EquipmentProfile
+
+  """
+  ***AUTH REQUIRED***
+  `Sutro App`  ✅ `Chatbot` ❌ `Diag Tool` ❌
+  Complete move Sutro Hub and Device from one Pool to another
+  Example:
+  ```
+  mutation ($id: Int!) {
+    completeMoveSutro(id: $id) {
+      id
+    }
+  }
+  ```
+  With Params:
+  ```
+  {
+    "id": 12
+  }
+  ```
+  """
+  completeMoveSutro(
+    """The id of the move service session."""
+    id: Int!
+  ): MoveSutroSessions
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Reset a device autoretract retry count. Can be used with or without a deviceId.
+  
+  ```
+  mutation {
+    resetAutoretractRetry {
+      id
+      screwAutoretracted
+      autoretractRetries
+    }
+  }
+  ```
+  
+  ```
+  mutation ($deviceId: ID) {
+    resetAutoretractRetry(deviceId: $deviceId) {
+      id
+      screwAutoretracted
+      autoretractRetries
+    }
+  }
+  ```
+  """
+  resetAutoretractRetry(deviceId: ID): Device
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Parse and import a CSV file with MES data. The data should follow the structure.
+  The CSV must have the following columns in the following order, from the far left
+  of the sheet.
+  
+  `MOName, PSN, CartoonSN, DeviceSN, DeviceID, HUBSN, HUBID, WIFIMAC, SIM`
+  
+  This request must be of the `multipart/form-data` content type.
+  To import the example into Insomnia, copy it and paste it into the URL bar of a new request.
+  Note that you may have to click to another request and back again for the all the fields to
+  populate properly.
+  
+  Example Curl Request:
+  ```
+  curl --request POST   --url https://api.mysutro.com/graphql   --header 'Authorization: Bearer <TOKEN>'   --header 'Content-Type: multipart/form-data; boundary=---011000010111000001101001'   --form 'query=mutation { importMesData(csv: "csv"} }'   --form csv=@/Users/bobby/csv_files/mes_data.csv
+  ```
+  """
+  importMesData(csv: Upload!): String
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Associate a `Hub` with the given serial number to a `SutroUser` with the given email
+  """
+  associateHub(
+    """The email address of the `SutroUser` to associate the `Hub` to"""
+    email: String!
+
+    """The id of the pool to associate the `Hub` to"""
+    poolId: Int
+
+    """The serial number of the `Hub` to associate with the `SutroUser`"""
+    serialNumber: String!
+  ): User
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅ `my.mySutro` ✅
+  
+  Manually toggle if a device should take readings
+  
+  #### Examples
+  
+  Pause (or resume) readings on device with serial number "123456789"
+  
+  ```graphql
+  mutation ($deviceSerial: String!) {
+    toggleTakeReadings(deviceSerial: $deviceSerial) {
+      health
+      id
+      serialNumber
+      shouldTakeReadings
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "deviceSerial": "123456789"
+  }
+  ```
+  """
+  toggleTakeReadings(
+    """The serial number of the device to toggle readings on/off for"""
+    deviceSerial: String!
+  ): Device
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Lets the user disconnect (unlink) a subscription from one device, so that they can link that recharge subscription to another device.
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($rechargeSubscriptionId: String!, $rechargeSubscriptionEmail: String) {
+    unlinkDeviceFromSubscription(rechargeSubscriptionId: $rechargeSubscriptionId, rechargeSubscriptionEmail: $rechargeSubscriptionEmail) {
+      id
+      device {
+        id
+      }
+    }
+  }
+  ```
+  
+  Passing these arguments will locate the subscription with id 5 and set its `device_id` to `null`.
+  
+  ```json
+  {
+    "rechargeSubscriptionId": "12345"
+  }
+  ```
+  """
+  unlinkDeviceFromSubscription(rechargeSubscriptionEmail: String, rechargeSubscriptionId: String!): RechargeSubscription
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅ `Diag Tool` ❌
+  
+  ## DEPRECATION NOTE: `storePoolDetails` has been replaced with `updatePool`.
+  
+  Set or change the `Pool` details for the user who is currently logged in.
+  
+  #### Examples
+  
+  Set up a new 10000 gallon non-saltwater spa as my `Pool` profile:
+  
+  ```graphql
+  mutation ($gallons: Int, $saltwater: Boolean, $type: PoolType) {
+    storePoolDetails(gallons: $gallons, saltwater: $saltwater, type: $type) {
+      id
+      gallons
+      saltwater
+      type
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```
+  {
+    "gallons": 10000,
+    "saltwater": false,
+    "type": "SPA"
+  }
+  ```
+  
+  Change my `Pool` to 20000 gallons:
+  
+  ```graphql
+  mutation ($gallons: Int) {
+    storePoolDetails(gallons: $gallons) {
+      id
+      gallons
+      saltwater
+      type
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```
+  {
+    "gallons": 20000
+  }
+  ```
+  """
+  storePoolDetails(gallons: Int, saltwater: Boolean, type: PoolType): Pool @deprecated(reason: "storePoolDetails will no longer be supported. Please use updatePool instead.")
+
+  """
+  Sign a new user up for the PoolMaster App. PoolMaster users don't have passwords.
+  
+  #### Examples
+  
+  Sign up a new user "Tester McTesterson":
+  
+  ```graphql
+  mutation ($firstName: String!, $lastName: String!, $email: String!, $phone: String!) {
+    poolmasterUserSignup(firstName: $firstName, lastName: $lastName, email: $email, phone: $phone) {
+      user {
+        email
+        firstName
+        lastName
+        phone
+      }
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "firstName": "Tester",
+    "lastName": "McTesterson",
+    "email": "thisisatest@testalot.com",
+    "phone": "414-141-4141"
+  }
+  ```
+  """
+  poolmasterUserSignup(
+    """The email to set in the new user's profile. **Must be unique**"""
+    email: String!
+
+    """The first name to set in the new user's profile"""
+    firstName: String!
+
+    """The last name to set in the new user's profile"""
+    lastName: String!
+
+    """
+    The (optional) phone number to set in the new user's profile. **If provided, must be unique**
+    """
+    phone: String
+  ): User
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Upload a new version of monitor firmware to AWS S3 and creates a `MonitorFirmware` entry for it in the DB. Note that the file name and version must be unique.
+  
+  Note that this mutation requires a file upload as a parameter. For instructions and visual examples of how to use this mutation in Insomnia, see [Preparing the Release](https://docs.google.com/document/d/1z9xssGOpkdqvPAb0YYq_Qkgu6klus1BE2PfnMzLPs04/edit?pli=1#heading=h.peewcvp866jw).
+  """
+  uploadMonitorFirmware(
+    """The .bin monitor firmware file to upload"""
+    file: Upload!
+
+    """
+    The version number exactly as it should appear in the response to a monitor `sysInfo` command
+    """
+    firmwareVersion: String!
+  ): Firmware
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Associate a `Device` with the current user by its serial number
+  """
+  associateDevice(
+    """The serial number of the `Device` to associate"""
+    serialNumber: String!
+  ): Device
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Start the precheck 2 step of the current `SutroUser`'s active `CalibrationSession`.
+  
+  mutation($deviceId: Int) {
+    startCalibrationPrecheckTwo(deviceId: $deviceId) {
+      id
+      status
+      batteryStatus
+      lidStatus
+      coreStatus
+      cartridgeStatus
+      step
+    }
+  }
+  
+  with query variables:
+  
+  ```json
+  {
+    "deviceId": 1
+  }
+  ```
+  """
+  startCalibrationPrecheckTwo(deviceId: Int): CalibrationSession
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Deletes a `Home` given an id, as long as the id belongs
+  to the currently logged-in user.
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($homeId: ID!){
+    deleteHome(homeId: $homeId) {
+      id
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "homeId": 44
+  }
+  ```
+  """
+  deleteHome(homeId: ID!): HomeObject
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Parse and import a CSV file with clean chemical data. The data should follow the structure and pass the validation from the [Chemical Import Template](https://docs.google.com/spreadsheets/d/1a0PMQ9xY4fdNmdQGTpqqMn6j2E5ofdk14COCYVSbv1U).
+  
+  Warning: Any entries marked for deletion on the CSV will be permanently deleted from the database.
+  """
+  importChemicals(csv: Upload!, excludeImageLookup: Boolean, headerRows: Int): String
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Force a `ServiceSession` for the provided `Device` to pass
+  
+  #### Examples
+  
+  Forces the latest service session of the device with serial number "123456789" to pass
+  
+  ```graphql
+  mutation ($deviceSerial: String!) {
+    passServiceMode(deviceSerial: $deviceSerial) {
+      id
+      step
+      status
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "deviceSerial": "123456789"
+  }
+  ```
+  
+  Forces the service session with id "5678" to pass
+  
+  ```graphql
+  mutation ($deviceSerial: String!) {
+    passServiceMode(deviceSerial: $deviceSerial) {
+      id
+      step
+      status
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "sessionId": "5678"
+  }
+  ```
+  """
+  passServiceMode(
+    """
+    The serial number of the device whose `ServiceSession` should be forced to pass.
+    """
+    deviceSerial: String
+
+    """
+    The (optional) session id of the `ServiceSession` that should be forced to pass.
+    """
+    sessionId: Int
+  ): ServiceSession
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅ `Diag Tool` ❌
+  
+  Creates a new pool for a specific home.
+  
+  #### Examples
+  
+  ```graphql
+  mutation CreatePool($homeId: ID!, $type: String!, $gallons: Int!, $saltwater: Boolean, $name: String!, $sanitizer: PoolProfileSanitizer!) {
+  createPool(homeId: $homeId, type: $type, gallons: $gallons, saltwater: $saltwater, name: $name, sanitizer: $sanitizer) {
+  id
+  type
+  gallons
+  saltwater
+  homeId
+  name
+  poolProfile {
+      id
+      type
+      sanitizer
+    }
+  }
+  }
+  
+  
+  ```
+  
+  with query variables:
+  
+  ```
+  {
+    "homeId": 1,
+    "type": "POOL",
+    "gallons": 15000,
+    "name": "name",
+    "saltwater": false,
+    "sanitizer": "CHLORINE"
+  }
+  ```
+  """
+  createPool(
+    """The volume of the pool in gallons."""
+    gallons: Float!
+
+    """The ID of the home the pool belongs to."""
+    homeId: ID!
+
+    """The name of the pool"""
+    name: String
+
+    """Any updated optional sanitizers the `Pool` uses"""
+    options: [PoolProfileOption]
+
+    """Whether the pool is saltwater."""
+    saltwater: Boolean = false
+
+    """The sanitizer of the pool"""
+    sanitizer: PoolProfileSanitizer!
+
+    """The type of pool."""
+    type: String!
+  ): Pool
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Clones (copies) the selected address, only changing the type (isShippingAddress) to avoid
+  conflicts. The newly created clone address will be assigned to whatever home id is passed.
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($addressId: ID!, $homeId: ID){
+    cloneAddress(addressId: $addressId, homeId: $homeId) {
+      id
+      addressLine_1
+      addressLine_2
+      city
+      state
+      postalCode
+      country
+      home {
+        id
+        name
+      }
+      isShippingAddress
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "addressId": 123,
+    "homeId": 45
+  }
+  ```
+  """
+  cloneAddress(addressId: ID, homeId: ID): Address
+
+  """Reset user's password"""
+  resetUserPassword(language: Language, password: String!, token: String!): ResetResult
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Changes the `ReleaseGroup` for the `SutroUser` with the provided email address.
+  
+  The `ReleaseGroup` determines the latest `FirmwareRelease` versions that the system will automatically OTA the `Hub` and `Device` to during calibration if they are not already up-to-date.
+  
+  Example:
+  
+  ```
+  mutation ($releaseGroup: ReleaseGroupType!, $email: String!, $deviceId: ID) {
+    changeReleaseGroup(releaseGroup: $releaseGroup, email: $email, deviceId: $deviceId) {
+      id
+      releaseGroup
+    }
+  }
+  ```
+  
+  With Params:
+  
+  ```
+  {
+    "releaseGroup": "CABANA_CLUB",
+    "email": "joe@mysutro.com",
+    "deviceId": 12
+  }
+  ```
+  """
+  changeReleaseGroup(
+    """The id of the target device. Defaults to the first device"""
+    deviceId: ID
+
+    """
+    The email address of the `SutroUser` whose `ReleaseGroup` should change
+    """
+    email: String!
+
+    """
+    The name of the new `ReleaseGroup` to switch the `SutroUser`'s hardware to
+    """
+    releaseGroup: ReleaseGroupType!
+  ): User
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅ `Diag Tool` ❌
+  
+  ## DEPRECATION NOTE: `setChemical` will no longer be supported. Please refer to [assignChemical](../../mutation/assignChemical) instead.
+  
+  Assign a given `Chemical` by its `id` to a given `ProfileBucket` of the `ChemicalProfile` of the user who is currently logged in.
+  
+  #### Notes
+  The user needs to have a pool to set up a `ChemicalProfile`.
+  
+  #### Examples
+  
+  Add the `Chemical` with id "399" as my primary sanitizer:
+  
+  ```graphql
+  mutation ($chemicalId: String!, $profileBucket: ProfileBucket!) {
+    setChemical(chemicalId: $chemicalId, profileBucket: $profileBucket) {
+      primarySanitizer {
+        id
+        name
+        upc
+      }
+      secondarySanitizer {
+        name
+      }
+      phUp {
+        name
+      }
+      phDown {
+        name
+      }
+      alkalinityUp {
+        name
+      }
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "chemicalId": "399",
+    "profileBucket": "PRIMARY_SANITIZER"
+  }
+  ```
+  """
+  setChemical(
+    """The id of the chemical to add"""
+    chemicalId: String!
+
+    """
+    **[Case-Sensitive]** The name of the user's `ProfileBucket` to assign the chemical to
+    """
+    profileBucket: ProfileBucket!
+  ): ChemicalProfile @deprecated(reason: "setChemical will no longer be supported. Please use assignChemical instead.")
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot`  ✅  `Diag Tool` ❌
+  
+  Creates a home for the currently logged-in user
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($name: String, $image: String, $isPrimary: Boolean){
+    createHome(name: $name, image: $image, isPrimary: $isPrimary) {
+      name
+      image
+      isPrimary
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+    {
+      "name": "Wafflehouse",
+      "image": "wafflehouse.png",
+      "isPrimary": true
+    }
+  ```
+  """
+  createHome(image: String, isPrimary: Boolean!, name: String): HomeObject
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Updates the setting for the user who is currently logged in for offline notifications.
+  This setting determines when they get a notification upon the Backend detecting that
+  their monitor or hub went offline.
+  
+  ```
+  mutation ($notificationsOfflineType: NotificationsOfflineType!, $deviceId: ID){
+    updateSettingNotificationsOffline(notificationsOfflineType: $notificationsOfflineType, deviceId: $deviceId) {
+      notificationsOffline
+    }
+  }
+  ```
+  
+  ```
+  {
+    "deviceId": 5,
+    "notificationsOfflineType": "ONCE_PER_DAY"
+  }
+  ```
+  """
+  updateSettingNotificationsOffline(
+    """The target device to change notification settings for """
+    deviceId: Int
+
+    """The new notification setting"""
+    notificationsOfflineType: NotificationsOfflineType!
+  ): NotificationsOffline
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Toggle the `OLD_PH_EQUATION` logic modifier for the given user.
+  """
+  toggleOldPhEquation(
+    poolId: Int
+
+    """The user we will toggle this modifier for"""
+    userEmail: String!
+  ): Settings
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅  `Diag Tool` ✅
+  
+  Schedules a change to the periodic messages for a given device
+  that only lasts for TODAY.
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($hours: [Int!], $userEmail: String,  $deviceId: ID, $bypassHourSpaceCheck: Boolean) {
+    setTemporaryTestTimes(hours: $hours, userEmail: $userEmail, deviceId: $deviceId, bypassHourSpaceCheck: $bypassHourSpaceCheck) {
+      hours
+      status
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "hours": [5, 10, 15],
+    "userEmail": "bob@mysutro.com",
+    "bypassHourSpaceCheck": true
+  }
+  ```
+  """
+  setTemporaryTestTimes(
+    """Skip the check to see if these hours are spaced out enough"""
+    bypassHourSpaceCheck: Boolean
+
+    """
+    The id of the device to update reading times for. Provided instead of the `user_email` argument
+    """
+    deviceId: ID
+
+    """
+    Format: [A, B, C] where A is the first partial reading, B is the second partial reading, and C is the full reading
+    """
+    hours: [Int]!
+
+    """The user to update times for, if calling this mutation from the DMT"""
+    userEmail: String
+  ): TestTimesResponse
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅ `Diag Tool` ❌
+  
+  Set or change the `Pool` and `PoolProfile` details for the user who is currently logged in.
+   It takes an optional pool id in case the user has multiple pools.
+  #### Examples
+  
+  Set up a new 10000 gallon spa that uses chlorine as its main sanitizer for the current user:
+  
+  ```graphql
+  mutation ($poolId: ID, $params: UpdatePoolOptions!) {
+    updatePool(poolId: $poolId, params: $params) {
+      id
+      gallons
+      options
+      poolProfile {
+        id
+        type
+        sanitizer
+      }
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```
+  {
+    "poolId": 5,
+    "params": {
+      "type": "SPA",
+      "volume": 10000,
+      "options": [],
+      "sanitizer": "CHLORINE"
+    }
+  }
+  ```
+  
+  Change my `Pool` to 20000 gallons and add optional mineral and ozone sanitizers:
+  
+  ```graphql
+  mutation ($params: UpdatePoolOptions!) {
+    updatePool(params: $params) {
+      id
+      gallons
+      options
+      poolProfile {
+        id
+        type
+        sanitizer
+      }
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```
+  {
+    "poolId": 5,
+    "params": {
+      "type": "SPA",
+      "volume": 20000,
+      "options": ["MINERAL", "OZONE"],
+      "sanitizer": "CHLORINE"
+    }
+  }
+  ```
+  """
+  updatePool(params: UpdatePoolOptions!, poolId: ID): Pool
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot`  ✅  `Diag Tool` ❌
+  
+  Edits a home for the currently logged-in user
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($homeId: ID!, $name: String, $image: String, $isPrimary: Boolean){
+    editHome(homeId: $homeId, name: $name, image: $image, isPrimary: $isPrimary) {
+      name
+      image
+      isPrimary
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+    {
+      "homeId": 5,
+      "name": "Wafflehouse",
+      "image": "wafflehouse.png",
+      "isPrimary": true
+    }
+  ```
+  """
+  editHome(homeId: ID!, image: String, isPrimary: Boolean!, name: String): HomeObject
+
+  """
+  ***AUTH REQUIRED***
+  `Sutro App`  ✅ `Chatbot` ❌ `Diag Tool` ❌
+  Move Sutro HUb and Device from one Pool to another
+  Example:
+  ```
+  mutation ($hubId: Int!, $poolId: Int!) {
+    moveSutro(hubId: $hubId, poolId: $poolId) {
+      id
+    }
+  }
+  ```
+  With Params:
+  ```
+  {
+    "poolId": 1
+    "hubId": 12
+  }
+  ```
+  """
+  moveSutro(
+    """The id of the target hub. Defaults to the first hub"""
+    hubId: Int!
+
+    """The new pool that the SutroUser wants to move the device to"""
+    poolId: Int!
+  ): MoveSutroSessions
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Create a new `FirmwareRelease` for a pair of `MonitorFirmware` and `HubFirmware` versions, intended for a specific `ReleaseGroup`.
+  
+  Once created, this release will be identified as the "latest release" for the `ReleaseGroup` specified. This means these versions will be used as the targets to auto-OTA `Hub`s and `Device`s to during calibration, until another release is created for this group.
+  
+  #### Examples
+  
+  Create a new monitor-first `FirmwareRelease` for Cabana Club (the beta users) for `MonitorFirmware` 1.2.0 and `HubFirmware` 1.2.1:
+  
+  ```graphql
+  mutation ($releaseGroup: ReleaseGroupType!, $hubVersion: String!, $monitorVersion: String!, $monitorFirst: Boolean!) {
+    createFirmwareRelease(releaseGroup: $releaseGroup, hubVersion: $hubVersion, monitorVersion: $monitorVersion, monitorFirst: $monitorFirst) {
+      id
+      hubRelease {
+        fileName
+        firmwareVersion
+      }
+      monitorFirst
+      monitorRelease {
+        fileName
+        firmwareVersion
+      }
+      releaseGroup
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "releaseGroup": "CABANA_CLUB",
+    "hubVersion": "1.2.0",
+    "monitorVersion": "1.2.1",
+    "monitorFirst": true
+  }
+  ```
+  """
+  createFirmwareRelease(
+    """
+    The version number or original file name for the `Hub` firmware to associate with this `FirmwareRelease`
+    """
+    hubVersion: String!
+
+    """
+    Whether or not this `FirmwareRelease` should perform the monitor OTA first
+    """
+    monitorFirst: Boolean!
+
+    """
+    The version number or original file name for the `Monitor` firmware to associate with this `FirmwareRelease`
+    """
+    monitorVersion: String!
+
+    """
+    The name of the `ReleaseGroup` that this `FirmwareRelease` is intended for
+    """
+    releaseGroup: ReleaseGroupType!
+  ): FirmwareRelease
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Updates the setting for the user who is currently logged in for reading notifications frequency.
+  """
+  updateSettingReadingNotificationsFrequency(
+    """The new settings option"""
+    frequency: NotificationsReadingFrequency!
+
+    """The target pool"""
+    poolId: ID
+  ): Settings
+
+  """
+  !app-only
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  ```graphql
+  mutation {
+    getHubAuth {
+      token
+    }
+  }
+  ```
+  
+  OR
+  
+  ```graphql
+  mutation($poolId: Int) {
+    getHubAuth(poolId: $poolId) {
+      token
+    }
+  }
+  ```
+  
+  params
+  ```
+  {
+    "poolId": 1
+  }
+  ```
+  
+  
+  Provide a JWT auth token to register a `Hub`. The token will expire after an hour.
+  """
+  getHubAuth(
+    """The id of the Pool for which to start the onboarding session."""
+    poolId: Int
+  ): HubAuth
+
+  """
+  ***AUTH REQUIRED***
+  
+  Creates an address for the currently logged-in user
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($addressLine_1: String, $addressLine_2: String, $city: String, $state: String, $postalCode: String, $country: String, $homeId: ID, $isShippingAddress: Boolean, $latitude: Float, $longitude: Float){
+      createAddress(addressLine_1: $addressLine_1, addressLine_2: $addressLine_2, city: $city, state: $state, postalCode: $postalCode, country: $country, homeId: $homeId, isShippingAddress: $isShippingAddress, latitude: $latitude, longitude: $longitude) {
+        addressLine_1
+        addressLine_2
+        city
+        state
+        postalCode
+        country
+        latitude
+        longitude
+        home {
+          id
+          name
+        }
+        device {
+          id
+        }
+        isShippingAddress
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "addressLine_1": "123 Main St",
+    "addressLine_2": "Apt 4B",
+    "city": "Exampleville",
+    "state": "CA",
+    "postalCode": "12345",
+    "country": "US",
+    "isShippingAddress": true,
+    "homeId": 5,
+    "isShippingAddress": true,
+    "latitude": 55.3,
+    "longitude": 99.52
+  }
+  ```
+  """
+  createAddress(addressLine1: String, addressLine2: String, city: String, country: String, homeId: ID, isShippingAddress: Boolean, latitude: Float, longitude: Float, postalCode: String, state: String): Address
+
+  """
+  !app-only
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Delete the provided FCM token for the currently logged in user.
+  """
+  deleteFcmToken(token: String!): String
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Start a standalone `ReadinessCheckSession` for the `Device` of the currently logged in user.
+  """
+  doReadinessCheck: ReadinessCheckSession
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Updates a Recharge subscription info given either
+  a Recharge customer id
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($rechargeSubscriptionId: String, $rechargeSubscriptionEmail: String){
+    updateRechargeCustomer(rechargeSubscriptionId: $rechargeSubscriptionId, rechargeSubscriptionEmail: $rechargeSubscriptionEmail) {
+      rechargeSubscriptionId
+      rechargeSubscriptionEmail
+      user {
+        email
+      }
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "rechargeSubscriptionId": "123456789",
+    "rechargeSubscriptionEmail": "email@email.com"
+  }
+  ```
+  """
+  updateRechargeCustomer(rechargeSubscriptionEmail: String!, rechargeSubscriptionId: String): RechargeSubscription
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Force the latest `CalibrationSession` for the provided `Device` to pass
+  
+  #### Examples
+  
+  Forces the latest calibration session of the device with serial number "123456789" to pass
+  
+  ```graphql
+  mutation ($deviceSerial: String!) {
+    passCalibration(deviceSerial: $deviceSerial) {
+      id
+      step
+      status
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "deviceSerial": "123456789"
+  }
+  ```
+  """
+  passCalibration(
+    """
+    The serial number of the device whose `CalibrationSession` should be forced to pass.
+    """
+    deviceSerial: String
+
+    """
+    The (optional) session id of the `CalibrationSession` that should be forced to pass.
+    """
+    sessionId: Int
+  ): CalibrationSession
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Generates a token for registering a webhook listener.
+  
+  #### Example
+  
+  ```graphql
+  mutation($deviceSerial: String!) {
+    getWebhookRegistrationToken(deviceSerial: $deviceSerial) {
+      token
+    }
+  }
+  ```
+  """
+  getWebhookRegistrationToken(
+    """The device this token will be valid for"""
+    deviceSerial: String!
+  ): WebhookTokenResult
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Manually reset a device health to "good." Depending on the flags
+  passed, the service and calibration sessions may also be cleared.
+  
+  #### Examples
+  
+  Reset device with serial number "123456789" to "good" health
+  
+  ```graphql
+  mutation ($deviceSerial: String!, $closeCalibrationSessions: Boolean!, $closeServiceSessions: Boolean!) {
+    resetDeviceHealth(deviceSerial: $deviceSerial, closeCalibrationSessions: $closeCalibrationSessions, closeServiceSessions: $closeServiceSessions) {
+      id
+      health
+      serialNumber
+      batteryLevel
+      closedSessions
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "deviceSerial": "123456789"
+    "closeCalibrationSessions": true,
+    "closeServiceSessions": false
+  }
+  ```
+  """
+  resetDeviceHealth(
+    """Whether to time out any open calibration sessions for the device"""
+    closeCalibrationSessions: Boolean!
+
+    """Whether to time out any open service sessions for the device"""
+    closeServiceSessions: Boolean!
+
+    """The serial number of the device whose health should be reset"""
+    deviceSerial: String!
+  ): ResetDeviceHealthType
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Get the latest `FirmwareRelease` versions specified for a given `ReleaseGroup`.
+  
+  These versions indicate the targets that the server will auto-OTA `Hub`s and `Device`s to during calibration, until another release is created for this group.
+  """
+  getLatestRelease(
+    """
+    The name of the `ReleaseGroup` to look up the latest `FirmwareRelease` for
+    """
+    releaseGroup: ReleaseGroupType!
+  ): FirmwareRelease
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  
+  This request must be of the `multipart/form-data` content type.
+  To import the example into Insomnia, copy it and paste it into the URL bar of a new request.
+  Note that you may have to click to another request and back again for the all the fields to
+  populate properly.
+  
+  Example Curl Request:
+  ```
+  curl --request POST --url https://api.mysutro.com/graphql --header 'Authorization: Bearer <TOKEN>' --header 'Content-Type: multipart/form-data; boundary=---011000010111000001101001' --form 'query=mutation { retireUnits(csv: "csv") }' --form csv=@/Users/bobby/csv_files/pool_store_data.csv
+  ```
+  """
+  retireUnits(csv: Upload!): String
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅ `Diag Tool` ❌
+  
+  Updates the configured language for a user
+  
+  ```graphql
+  mutation ($language: Language!){
+    updateSettingLanguage(language: $language) {
+      language
+    }
+  }
+  ```
+  
+  ```json
+  {
+    "language": "FRENCH"
+  }
+  
+  ```
+  """
+  updateSettingLanguage(
+    """The new language"""
+    language: Language!
+  ): Settings
+
+  """
+  !app-only
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Add an FCM token to the currently logged in user.
+  """
+  addFcmToken(token: String!): String
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Adds a cartridge's serial number to the `cartridges` table.
+  The cartridge serial number can have a maximum of 14 characters.
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($serialNumber: String!, $deviceId: Int) {
+    registerCartridge(serialNumber: $serialNumber, deviceId: $deviceId) {
+      success
+      warning
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "params": {
+      "serialNumber": "0550:4b32:8f36:6020",
+      "deviceId": 1
+    }
+  }
+  ```
+  """
+  registerCartridge(
+    """The id of the device for which to register the cartridge"""
+    deviceId: Int
+    serialNumber: String!
+  ): CartridgeRegistrationResult
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Updates the configured measurement system for a user
+  
+  ```graphql
+  mutation ($measurementSystem: measurementSystem!){
+    updateSettingMeasurementSystem(measurementSystem: $measurementSystem) {
+      measurementSystem
+    }
+  }
+  ```
+  
+  ```json
+  {
+    "measurementSystem": "METRIC"
+  }
+  ```
+  """
+  updateSettingMeasurementSystem(
+    """The new measurement system"""
+    measurementSystem: MeasurementSystem!
+  ): Settings
+
+  """
+  ***AUTH REQUIRED***
+  
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Open a new `CalibrationSession` for the `Device` of the currently logged in user, or for a device spicified by the user.
+  
+  
+  mutation($deviceId: Int) {
+    createCalibrationSession(deviceId: $deviceId) {
+      id
+      status
+    }
+  }
+  
+  with query variables:
+  
+  ```json
+  {
+    "deviceId": 1
+  }
+  ```
+  """
+  createCalibrationSession(deviceId: Int): CalibrationSession
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅ `Diag Tool` ❌
+  
+  ## DEPRECATION NOTE: `addChemical` will no longer be supported. Please refer to [assignChemical](../../mutation/assignChemical) instead.
+  
+  Attempt to add a chemical product to a given `ProfileBucket` of the `ChemicalProfile` of the user who is currently logged in by its UPC/barcode. If the `ProfileBucket` is null, the server will try to add it to the `ProfileBucket` corresponding to the found `Chemical`'s type.
+  
+  If a `Chemical` exists in our database that matches the UPC/barcode provided, the server will try to assign that `Chemical` to the user's `ChemicalProfile`.
+  
+  If no `Chemical` is found, a `Chemical` is inserted into the database and associated with the user but not assigned to their profile. The `Chemical` will be flagged as "unknown" until its product information can be determined and imported.
+  
+  #### Notes
+  The user needs to have a pool to set up a `ChemicalProfile`.
+  
+  There are [many forms](https://www.tec-it.com/en/support/knowbase/barcode-overview/linear/Default.aspx) of UPC/barcode, but the most common are **UPC-A**, **UPC-E**, and **EAN13**. We currently do not support alphanumeric barcode formats, and any attempt to scan and save one is rejected.
+  
+  #### Examples
+  
+  Add the `Chemical` with UPC "035186201378" to my `ChemicalProfile`:
+  
+  ```graphql
+  mutation ($chemicalUpc: String!, $profileBucket: ProfileBucket) {
+    addChemical(
+      chemicalUpc: $chemicalUpc,
+      profileBucket: $profileBucket
+    ) {
+      chemical {
+        id
+        type
+        upc
+        image
+      }
+      result
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "chemicalUpc": "035186201378",
+    "profileBucket": null
+  }
+  ```
+  
+  Add the `Chemical` with UPC "035186201378" as my pH increaser:
+  
+  ```graphql
+  mutation ($chemicalUpc: String!, $profileBucket: ProfileBucket) {
+    addChemical(
+      chemicalUpc: $chemicalUpc,
+      profileBucket: $profileBucket
+    ) {
+      chemical {
+        id
+        type
+        upc
+        image
+      }
+      result
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "chemicalUpc": "035186201378",
+    "profileBucket": "PH_UP"
+  }
+  ```
+  """
+  addChemical(
+    """The UPC/barcode string of the chemical product to look for"""
+    chemicalUpc: String!
+
+    """
+    **[Case-Sensitive]** The name of the user's `ProfileBucket` to assign the chemical to. If not provided, the server will try to add the `Chemical` to the `ProfileBucket` corresponding to the found `Chemical`'s type.
+    """
+    profileBucket: ProfileBucket
+  ): AddChemicalResponse @deprecated(reason: "addChemical will no longer be supported. Please use assignChemical instead.")
+
+  """
+  Sign a new user up.
+  
+  #### Examples
+  
+  Sign up a new user "Tester McTesterson":
+  
+  ```graphql
+  mutation ($firstName: String!, $lastName: String!, $password: String!, $email: String!, $phone: String, $type: String){
+    signup(firstName: $firstName, lastName: $lastName, password: $password, email: $email, phone: $phone, type: $type) {
+      user {
+        email
+        firstName
+        lastName
+        phone
+      }
+      token
+      hubToken
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "firstName": "Tester",
+    "lastName": "McTesterson",
+    "email": "thisisatest@testalot.com",
+    "password": "testpassword1",
+    "phone": "414-141-4141"
+  }
+  ```
+  """
+  signup(
+    """The email to set in the new user's profile. **Must be unique**"""
+    email: String!
+
+    """The first name to set in the new user's profile"""
+    firstName: String!
+
+    """The (optional) language to set for this user. Defaults to English"""
+    language: Language
+
+    """The last name to set in the new user's profile"""
+    lastName: String!
+
+    """The password to set for the new user (stripped from logs)"""
+    password: String!
+
+    """The phone number to set in the new user's profile"""
+    phone: String!
+
+    """The type of user that is signing up. Defaults to `sutro`"""
+    type: SutroUserType
+  ): AuthResult
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Finish a service mode session
+  
+  ```graphql
+  mutation(deviceId: $deviceId) {
+    finishServiceModeSession(deviceId: $deviceId) {
+      step
+      status
+    }
+  }
+  ```
+  with query variables:
+  
+  ```json
+  {
+    "deviceId": 1
+  }
+  ```
+  """
+  finishServiceModeSession(
+    """The id of the Device for which service mode should be finished"""
+    deviceId: Int
+  ): ServiceSession
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅ `My.MySutro` ✅
+  
+  Deletes a Recharge payment method
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($rechargePaymentMethodId: String!) {
+    deletePaymentMethod(rechargePaymentMethodId: $rechargePaymentMethodId) {
+      success
+      message
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "rechargePaymentMethodId": "53034907"
+  }
+  ```
+  """
+  deletePaymentMethod(rechargePaymentMethodId: String!): GenericResult
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Upload a new version of hub firmware to AWS S3 and creates a `HubFirmware` entry for it in the DB. Note that the file name and version must be unique.
+  
+  Note that this mutation requires a file upload as a parameter. For instructions and visual examples of how to use this mutation in Insomnia, see [Preparing the Release](https://docs.google.com/document/d/1z9xssGOpkdqvPAb0YYq_Qkgu6klus1BE2PfnMzLPs04/edit?pli=1#heading=h.peewcvp866jw).
+  """
+  uploadHubFirmware(
+    """The .bin hub firmware file to upload"""
+    file: Upload!
+
+    """
+    The version number exactly as it should appear in the response to a hub `sysInfo` command
+    """
+    firmwareVersion: String!
+  ): Firmware
+
+  """
+  ***AUTH REQUIRED***
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  Dissociates a `Pool` given an id, as long as the id belongs
+  to the currently logged-in user and if the `Pool` is not connected to a `Hub`.
+  #### Examples
+  ```graphql
+  mutation ($poolId: ID!){
+    dissociatePool(poolId: $poolId) {
+      id
+    }
+  }
+  ```
+  with query variables:
+  ```json
+  {
+    "poolId": 44
+  }
+  ```
+  """
+  dissociatePool(poolId: ID!): Pool
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌ `Webhook` ✅
+  
+  Creates a new webhook listener.
+  
+  #### Examples
+  
+  ```graphql
+  mutation($name: String!, $webhookUrl: String!, $bearerToken: String!) {
+    createWebhookListener(
+      name: $name,
+      webhookUrl: $webhookUrl,
+      bearerToken: $bearerToken,
+    ) {
+      name
+      webhookUrl
+      device {
+        serialNumber
+      }
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "name": "New Webhook",
+    "webhookUrl": "https://example.com/webhook",
+    "bearerToken": "your-auth-token"
+  }
+  ```
+  """
+  createWebhookListener(
+    """
+    When payloads are sent to the webhook URL, this token will be used to authenticate
+    """
+    bearerToken: String
+
+    """Name of the webhook listener"""
+    name: String!
+
+    """The URL where webhook events will be sent"""
+    webhookUrl: String!
+  ): WebhookListener
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅ `Diag Tool` ❌
+  
+  Adds a new `Chemical` product with the provided UPC (barcode number) to our database and tries to assign it to the `ChemicalProfile` of the user who is currently logged in.
+  
+  The client may choose to specify the role that the `Chemical` should take on by providing a compatible `AssignableChemicalType` to the `role` argument. Otherwise, the server will try to assign the `Chemical` based on its `ChemicalType` and the roles that are not yet assigned on the user's `ChemicalProfile`.
+  
+  If no existing `Chemical` is found with the provided UPC in our database, the server will insert a new entry for it and assign it the `UNKNOWN` behaviour. This `Chemical` will not be usable until more information and a different behaviour are determined for it at a later date, but the server will record that this `SutroUser` tried to scan this product.
+  
+  If, however, a known `Chemical` with this UPC is already part of our database, the server will record that this `SutroUser` scanned it and then try to assign it on their `ChemicalProfile`.
+  
+  #### Notes
+  A `Pool` is required to begin assigning products to a `ChemicalProfile`.
+  
+  There are [many forms](https://www.tec-it.com/en/support/knowbase/barcode-overview/linear/Default.aspx) of UPC/barcode, but the most common are **UPC-A**, **UPC-E**, and **EAN13**. We currently do not support alphanumeric barcode formats, and any attempt to scan and save one is rejected.
+  
+  To unassign a `Chemical`, refer to [unassignChemical](../../mutation/unassignChemical) mutation
+  
+  #### Examples
+  
+  Assign the sanitizer `Chemical` with UPC "035186201378" to my `ChemicalProfile`:
+  
+  ```graphql
+  mutation ($upc: String!) {
+    assignChemical(upc: $upc) {
+      chemicalProfile {
+        primarySanitizer {
+          behaviour
+          id
+          image
+          name
+          types
+          upc
+        }
+      }
+      result
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "upc": "035186201378"
+  }
+  ```
+  
+  Assign the `Chemical` with UPC "035186201378" as my pH increaser:
+  
+  ```graphql
+  mutation ($upc: String!, $role: AssignableChemicalType) {
+    assignChemical(upc: $upc, role: $role) {
+      chemicalProfile {
+        primarySanitizer {
+          behaviour
+          id
+          image
+          name
+          types
+          upc
+        }
+      }
+      result
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "upc": "035186201378",
+    "role": "PH_UP"
+  }
+  ```
+  """
+  assignChemical(
+    """
+    Parameters for identifying and assigning a `Chemical` product to the current user's `ChemicalProfile`.
+    """
+    params: AssignChemicalParams
+  ): AssignChemicalResponse
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Permanently delete the latest `ServiceSession` for the provided `Device`
+  
+  #### Examples
+  
+  Deletes the latest service session of the device with serial number "123456789" from the database
+  
+  ```graphql
+  mutation ($deviceSerial: String!) {
+    deleteServiceSession(deviceSerial: $deviceSerial) {
+      id
+      status
+      step
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "deviceSerial": "123456789"
+  }
+  ```
+  """
+  deleteServiceSession(
+    """
+    The serial number of the device whose `ServiceSession` should be stopped and deleted.
+    """
+    deviceSerial: String!
+  ): ServiceSession
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅ `My.MySutro` ✅
+  
+  Changes a customer's subscription.
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($rechargeEmail: String!, $externalVariantId: String!, $price: String!, $rechargeSubscriptionId: ID) {
+  updateCustomerSubscriptionType(rechargeEmail: $rechargeEmail, externalVariantId: $externalVariantId, price: $price, rechargeSubscriptionId: $rechargeSubscriptionId) {
+  subscriptionTypeUpdated
+  message
+  }
+  }
+  
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "price": "19.99",
+    "rechargeEmail": "dave@lol.com",
+    "externalVariantId": "123123123",
+    "rechargeSubscriptionId": "12345"
+  }
+  ```
+  """
+  updateCustomerSubscriptionType(externalVariantId: String!, price: String!, rechargeEmail: String!, rechargeSubscriptionId: ID): UpdateCustomerSubscriptionTypeResult
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Force the latest `CalibrationSession` for the provided `Device` to stop on the server and permanently delete it from the database
+  
+  #### Examples
+  
+  Forces the latest calibration session of the device with serial number "123456789" to stop and deletes it from the database
+  
+  ```graphql
+  mutation ($deviceSerial: String!) {
+    deleteCalibrationSession(deviceSerial: $deviceSerial) {
+      id
+      status
+      step
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "deviceSerial": "123456789"
+  }
+  ```
+  """
+  deleteCalibrationSession(
+    """
+    The serial number of the device whose `CalibrationSession` should be stopped and deleted.
+    """
+    deviceSerial: String!
+  ): CalibrationSession
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅ `Diag Tool` ❌
+  
+  ## DEPRECATION NOTE: `setProblemCompletion` has been replaced with `completeRecommendation`.
+  
+  Complete a treatment recommendation from a `SingleReadingProblem` on a `PoolReading` by setting its `completed_at` time.
+  
+  #### Notes
+  Historically the app sent naive datetimes, but it has since been updated to
+  send UTC timestamps instead. However, until we can be reasonably sure that all
+  users have updated to a version of the app that sends these UTC timestamps, we
+  must continue to support naive timestamps as well. Union types are unfortunately
+  not legal input types in absinthe, so we keep this as a naive datetime for now.
+  
+  See ADR 0009-prefer-utc-based-timestamps-to-naive-timestamps.md for more context
+  
+  #### Examples
+  
+  Mark the first treatment recommendation on `PoolReading` with id "25" as completed on 04/20/2020 at 22:32:40 UTC:
+  
+  ```graphql
+  mutation ($readingId: ID!, $problemIndex: Int!, $completedAt: NaiveDateTime) {
+    setProblemCompletion(readingId: $readingId, problemIndex: $problemIndex, completedAt: $completedAt) {
+      success
+      completedAt
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "readingId": "25",
+    "problemIndex": 0,
+    "completedAt": "2020-04-20T22:32:40.000Z"
+  }
+  ```
+  
+  Mark the first treatment recommendation on `PoolReading` with id "25" as incomplete:
+  
+  ```graphql
+  mutation ($readingId: ID!, $problemIndex: Int!, $completedAt: NaiveDateTime) {
+    setProblemCompletion(readingId: $readingId, problemIndex: $problemIndex, completedAt: $completedAt) {
+      success
+      completedAt
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "readingId": "25",
+    "problemIndex": 0,
+    "completedAt": null
+  }
+  ```
+  """
+  setProblemCompletion(
+    """
+    The timestamp to mark for when this treatment was completed. Should be in UTC but accepts `NaiveDateTime`s as well to support older versions of the app. If not provided, the `SingleReadingProblem` will be marked as incomplete.
+    """
+    completedAt: NaiveDateTime
+
+    """
+    The index of the `SingleReadingProblem` in the array of the field `problems` on the `PoolReading` whose treatment should be marked as completed
+    """
+    problemIndex: Int!
+
+    """
+    The `id` of the `PoolReading` whose treatment should be marked as completed
+    """
+    readingId: ID!
+  ): CompleteRecommendationResult
+
+  """Request a user's password to be reset"""
+  requestPasswordReset(email: String!, language: Language): StatusResult
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅ `Third Party (Jacuzzi)` ✅
+  
+  Adds to the list of emails that will not be handled normally for subscription setup.
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($pattern: String!, $exempt: Boolean!) {
+    addSubscriptionRule(pattern: $pattern, exempt: $exempt) {
+      success
+      message
+    }
+  }
+  ```
+  
+  The user that signs up with happy@mysutro.com will be exempt from subscription
+  requirements.
+  
+  ```json
+  {
+    "pattern": "happy@mysutro.com",
+    "exempt": true
+  }
+  ```
+  
+  Any user that signs up with a mysutro.com email address will be exempt from subscription
+  requirements.
+  
+  ```json
+  {
+    "pattern": "mysutro.com",
+    "exempt": true
+  }
+  ```
+  
+  The user that signs up with sad@mysutro.com will never be exempt from subscription
+  requirements, even if the domain mysutro.com is marked as exempted.
+  
+  ```json
+  {
+    "pattern": "sad@mysutro.com",
+    "exempt": false
+  }
+  ```
+  """
+  addSubscriptionRule(exempt: Boolean!, pattern: String!): GenericResult
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅ `My.MySutro` ✅
+  
+  Changes a customer's address records on Shopify and Recharge
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($params: UpdateCustomerAddressParams!) {
+    updateCustomerAddress(params: $params) {
+      addressUpdated
+      message
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "params": {
+      "firstName": "Newname",
+      "lastName": "McGee",
+      "email": "orangutan@test.com",
+      "address1": "1234 A Different Place Dr",
+      "city": "New Town",
+      "province": "Georgia",
+      "provinceCode": "GA",
+      "phone": "8639990000",
+      "country": "United States",
+      "countryCode": "US",
+      "zip": "30369"
+    }
+  }
+  ```
+  """
+  updateCustomerAddress(params: UpdateCustomerAddressParams!): UpdateCustomerAddressResult
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅ `My.MySutro` ✅
+  
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($params: SetupCustomerPaymentAndShipmentsParams!) {
+    setupCustomerPaymentAndShipments(params: $params) {
+      success
+      message
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "params": {
+      "email": "bob@mysutro.com",
+      "paymentType": "CREDIT_CARD",
+      "rechargeCustomerId": "123123123",
+      "processorCustomerToken": "cus_KqKq123123TTTG",
+      "processorPaymentMethodToken": "pm_1K9YFAKE2B7mHahaha1"
+    }
+  }
+  ```
+  """
+  setupCustomerPaymentAndShipments(params: SetupCustomerPaymentAndShipmentsParams!): GenericResult
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Notify multiple users at once
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($userGroup: MulticastUserGroup!, $title: String, $body: String, $notificationType: NotificationType!, $dataMessageType: String, $dataMessagePayload: String, $inactiveMinutes: Int) {
+  multicastNotification(userGroup: $userGroup, title: $title, body: $body, notificationType: $notificationType, dataMessageType: $dataMessageType, dataMessagePayload: $dataMessagePayload, inactiveMinutes: $inactiveMinutes)
+  }
+  ```
+  
+  To send a push notification to all users:
+  
+  ```json
+  {
+    "userGroup": "ALL",
+    "notificationType": "PUSH",
+    "title": "Free Protein Shakes!",
+    "body": "Do not drink them"
+  }
+  ```
+  
+  To send a data message to all users:
+  
+  ```json
+  {
+    "userGroup": "ALL",
+    "notificationType": "DATA",
+    "dataMessageType": "ANY_TYPE",
+    "dataMessagePayload": "SOMETHING"
+  }
+  ```
+  """
+  multicastNotification(
+    """[Push Notification Only] The body of the push notification"""
+    body: String
+
+    """[Data Message Only] The `payload` parameter of the data message"""
+    dataMessagePayload: String
+
+    """[Data Message Only] The `type` parameter of the data message"""
+    dataMessageType: String
+
+    """
+    When notifying inactive hubs or devices, this parameter decides how many minutes since the last message before we consider a hub or device inactive. Defaults to 65
+    """
+    inactiveMinutes: Int
+
+    """Which type of notification to send to the users' devices"""
+    notificationType: NotificationType!
+
+    """[Push Notification Only] The title of the push notification"""
+    title: String
+
+    """Which group of users to send the notification or data message to"""
+    userGroup: MulticastUserGroup
+  ): String
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Finish the reconnection on a service mode session
+  
+  ```graphql
+  mutation($deviceId: Int) {
+    finishReconnect(deviceId: $deviceId) {
+      id
+      status
+      error
+      step
+    }
+  }
+  ```
+  with query variables:
+  
+  ```json
+  {
+    "deviceId": 1
+  }
+  ```
+  """
+  finishReconnect(
+    """The id of the Device for which to finish reconnect"""
+    deviceId: Int
+  ): ServiceSession
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅ `Diag Tool` ❌
+  
+  Analyze a reading given at least the pH, chlorine, and alkalinity and return the raw recommendation values
+  If there is no existing pool or chemical profile for this user, you must specify the pool volume and a default chemical profile will be used.
+  
+  #### Notes
+  This is a one-off reading that is not saved to the database.
+  An optional `language` param can be provided. Defaults to `ENGLISH`.
+  
+  #### Examples
+  
+  ```graphql
+  mutation($params: AnalyzeReadingParams!) {
+    getRawRecommendation(params: $params) {
+      alkalinity {
+        decision
+        recommendation {
+          amount {
+            fractionalPart {
+              unit
+              value
+            }
+            wholePart {
+              unit
+              value
+            }
+          }
+          treatment
+          chemical {
+            id
+            behaviour
+          }
+        }
+      }
+      chlorine {
+        decision
+        recommendation {
+          amount {
+            fractionalPart {
+              unit
+              value
+            }
+            wholePart {
+              unit
+              value
+            }
+          }
+          treatment
+          chemical {
+            id
+            behaviour
+          }
+        }
+      }
+      ph {
+        decision
+        recommendation {
+          amount {
+            fractionalPart {
+              unit
+              value
+            }
+            wholePart {
+              unit
+              value
+            }
+          }
+          treatment
+          chemical {
+            id
+            behaviour
+          }
+        }
+      }
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "params": {
+      "ph": 7.5,
+      "chlorine": 1,
+      "alkalinity": 80,
+      "gallons": 10000,
+      "language": "FRENCH"
+    }
+  }
+  ```
+  """
+  getRawRecommendation(params: AnalyzeReadingParams!): RawAnalysisResult
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Updates a Recharge subscription info given either
+  a Sutro email or a Recharge email
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($sutroUserEmail: String, $rechargeSubscriptionEmail: String, $rechargeSubscriptionId: String){
+    updateRechargeSubscription(sutroUserEmail: $sutroUserEmail, rechargeSubscriptionEmail: $rechargeSubscriptionEmail, rechargeSubscriptionId: $rechargeSubscriptionId) {
+      rechargeSubscriptionEmail
+      lastRechargeOrderDate
+      subscriptionType
+      user {
+        email
+      }
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+      "sutroUserEmail": "water@melon.com"
+  }
+  ```
+  
+  or
+  
+  ```json
+  {
+    "rechargeSubscriptionEmail": "melon_boy@i-like-melons.com"
+  }
+  ```
+  
+  or
+  
+  ```json
+  {
+    "rechargeSubscriptionid": "123456789"
+  }
+  ```
+  """
+  updateRechargeSubscription(rechargeSubscriptionEmail: String, rechargeSubscriptionId: String, sutroUserEmail: String): RechargeSubscription
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Update a service mode session to flush user's device
+  
+  ```graphql
+  mutation($deviceId: Int) {
+    updateServiceModeSession(deviceId: $deviceId) {
+      step
+      status
+    }
+  }
+  ```
+  with query variables:
+  
+  ```json
+  {
+    "deviceId": 1
+  }
+  ```
+  """
+  updateServiceModeSession(
+    """The id of the Device for which service session to be updated"""
+    deviceId: Int
+  ): ServiceSession
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  
+  This request must be of the `multipart/form-data` content type.
+  To import the example into Insomnia, copy it and paste it into the URL bar of a new request.
+  Note that you may have to click to another request and back again for the all the fields to
+  populate properly.
+  
+  Example Curl Request:
+  ```
+  curl --request POST --url https://api.mysutro.com/graphql --header 'Authorization: Bearer <TOKEN>' --header 'Content-Type: multipart/form-data; boundary=---011000010111000001101001' --form 'query=mutation { importPoolStoreData(csv: "csv", poolStoreName: "Ye Olde Pooles") }' --form csv=@/Users/bobby/csv_files/pool_store_data.csv
+  ```
+  """
+  importPoolStoreData(csv: Upload!, poolStoreName: String!): String
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅ `my.mySutro` ✅
+  
+  Closes an open pool.
+  - Clears the `reopened_on` date
+  - Populates the `will_reopen_on` date
+  - Cancels the Recharge subscription
+  - Creates a history entry
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($sutroEmail: String!, $reopenDate: DateTime!, $poolId: Int){
+    closePool(sutroEmail: $sutroEmail, reopenDate: $reopenDate, poolId: $poolId) {
+      id
+      reopenDate
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```
+  {
+    "sutroEmail": "person@example.com",
+    "reopenDate": "2025-07-15 00:00:00Z",
+    "poolId": 1
+  }
+  ```
+  """
+  closePool(poolId: Int, sutroEmail: String!, willReopenOn: DateTime!): Pool
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅ `Sutro Central` ✅
+  
+  Syncs Sutro Central to the latest state of a given SutroUser.
+  
+  Example Mutation
+  
+  ```
+  mutation ($sutroEmail: String!) {
+    syncSutroUserSutroCentral(sutroEmail: $sutroEmail) {
+      address
+      chemicalsData
+      email
+      filtrationType
+      address
+      chemicalsData
+      email
+      firstName
+      heater
+      id
+      lastName
+      lights
+      linerType
+      minOzUv
+      minOzUvOptions
+      otherWaterSource
+      poolType
+      poolVolume
+      sanitizer
+      status
+      sunCover
+      waterfall
+      winterCover
+      interior
+    }
+  }
+  ```
+  
+  Example Params:
+  ```
+  {
+    "sutroEmail": "bob@mysutro.com"
+  }
+  ```
+  """
+  syncSutroUserSutroCentral(sutroEmail: String!): SutroCentralUserResponse
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅ `Diag Tool` ❌
+  
+  Change profile details of the user who is currently logged in. All arguments are optional.
+  """
+  updateUserProfile(
+    """The new email to set"""
+    email: String
+
+    """The new first name to set"""
+    firstName: String
+
+    """The new last name to set"""
+    lastName: String
+
+    """The new phone number to set"""
+    phone: String
+
+    """The new user type to set"""
+    type: SutroUserType
+  ): User
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Triggers either a full or a partial reading for the specified device.
+  Can be used either from the app or by CS personnel with a diagnostics
+  token.
+  
+  #### Examples
+  
+  ```graphql
+  mutation($deviceId: Int, $readingType: ReadingType){
+    triggerReading(deviceId: $deviceId, readingType: $readingType)
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "deviceId": 1,
+    "readingType": "FULL"
+  }
+  ```
+  
+  or
+  
+  ```json
+  {
+    "deviceId": 1,
+    "readingType": "PARTIAL"
+  }
+  ```
+  
+  or, to default to the first address for the user,
+  
+  ```
+  {
+    "readingType": "PARTIAL"
+  }
+  ```
+  """
+  triggerReading(
+    """
+    The id of the device for which to trigger the reading; defaults to the first device
+    """
+    deviceId: Int
+
+    """Which type of reading to trigger for the device"""
+    readingType: ReadingType!
+  ): String
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ✅
+  
+  
+  ```graphql
+  mutation($deviceId: Int!, $value: Boolean!) {
+    setNeedsCustomerSupport(deviceId: $deviceId, value: $value) {
+      id
+      needsCustomerSupport
+    }
+  }
+  ```
+  
+  With Params
+  
+  ```
+  {
+    "deviceId": 5,
+    "value": true
+  }
+  ```
+  
+  Sets the `needs_customer_support` flag for the specified device to the specified value.
+  """
+  setNeedsCustomerSupport(
+    """The ID of the device to set the `needs_customer_support` for"""
+    deviceId: Int!
+
+    """The new value of the `needs_customer_support` field"""
+    value: Boolean!
+  ): Device
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅ `My.MySutro` ✅
+  
+  Links a Recharge customer to a Stripe customer and a Stripe payment method
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($params: LinkPaymentMethodParams!) {
+    linkPaymentMethod(params: $params) {
+      id
+      processorName
+      customerId
+      default
+      processorCustomerToken
+      processorPaymentMethodToken
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "params": {
+      "recharge_customer_id": "1234",
+      "recharge_subscription_id": "12345",
+      "payment_type": "CREDIT_CARD",
+      "processor_customer_token": "cus_1234",
+      "processor_payment_method_token": "pm_5678"
+    }
+  }
+  ```
+  """
+  linkPaymentMethod(params: LinkPaymentMethodParams!): RechargePaymentMethod
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅  `My.MySutro` ✅
+  
+  Creates initial subscription records given
+  both a Recharge and a Sutro email
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($sutroUserEmail: String!, $rechargeSubscriptionEmail: String!, $overwriteIfExists: Boolean, $deviceId: Int){
+    linkRechargeSubscription(sutroUserEmail: $sutroUserEmail, rechargeSubscriptionEmail: $rechargeSubscriptionEmail, overwriteIfExists: $overwriteIfExists, deviceId: $deviceId) {
+      rechargeSubscriptionEmail
+      subscriptionType
+      user {
+        email
+      }
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "overwriteIfExists": false,
+    "sutroUserEmail": "water@melon.com",
+    "rechargeSubscriptionEmail": "melon_boy@i-like-melons.com",
+    "deviceId": 12345
+  }
+  ```
+  """
+  linkRechargeSubscription(deviceId: Int!, overwriteIfExists: Boolean, rechargeSubscriptionEmail: String!, rechargeSubscriptionId: String, sutroUserEmail: String!): RechargeSubscription
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅  `My.MySutro` ✅
+  
+  Sets up a subscription for a user on Shopify and Recharge. Does NOT
+  create payment-related information, only the user's shipping,
+  contact, and subscription information.
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($params: SetupCustomerSubscriptionParams!) {
+    setupCustomerSubscription(params: $params) {
+      subscriptionCreated
+      rechargeSubscriptionId
+      message
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "params": {
+      "firstName": "Billy",
+      "lastName": "Penguinson",
+      "phone": "8632220088",
+      "email": "billyp@email.com",
+      "address1": "2000 Happy Slappy Lane",
+      "city": "Happy Town",
+      "province": "Florida",
+      "provinceCode": "FL",
+      "zip": "123456",
+      "country": "United States",
+      "countryCode": "US",
+      "externalVariantId": "5566778899123"
+    }
+  }
+  ```
+  
+  #### Responses
+  
+  ##### Normal
+  
+  If the end of the setup flow was reached, there will be an object with a message and a `subscriptionCreated` flag.
+  
+  ```
+  {
+    "data": {
+      "setupCustomerSubscription": {
+        "message": "User already has subscription",
+        "subscriptionCreated": false,
+        "deviceId": 12345
+      }
+    }
+  }
+  ```
+  
+  ##### Error
+  
+  If something went wrong during the setup flow, there will be an object with the format seen in the example below.
+  
+  `api_error_message`: The message returned by the external API, whether Shopify or Recharge
+  `message`: A generic error message with the error code. Mostly here because Absinthe requires the `message` key to be here.
+  `sutro_error_code`: An integer code that indicates which part of the flow had a problem.
+  `sutro_error_message`: At present, this is the function name where the error occurred.
+  
+  ```
+  {
+    "data": {
+      "setupCustomerSubscription": null
+    },
+    "errors": [
+      {
+        "api_error_message": "{"errors": {"all": "No Address Candidate Found"}}",
+        "locations": [
+          {
+            "column": 0,
+            "line": 2
+          }
+        ],
+        "message": "Subscription setup failed with error code 2002.",
+        "path": [
+          "setupCustomerSubscription"
+        ],
+        "sutro_error_code": 2002,
+        "sutro_error_message": "get_or_create_recharge_address"
+      }
+    ]
+  }
+  ```
+  """
+  setupCustomerSubscription(params: SetupCustomerSubscriptionParams): SetupCustomerSubscriptionResult
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅ `Diag Tool` ❌
+  
+  Save the primary pool store from Sutro Central based on Pool
+  
+  
+  ```graphql
+  mutation ($poolId: Int, $id: Int, $name: String) {
+    savePrimaryPoolStore(poolId: $poolId, id: $id, name: $name) {
+      ScPoolStoreName
+      ScPoolStoreId
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```
+  {
+    "poolId":1,
+    "id": 2,
+    "name": "name of pool store"
+  }
+  ```
+  """
+  savePrimaryPoolStore(id: Int!, name: String!, poolId: Int!): Pool
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅ `My.MySutro` ✅
+  
+  Cancels a subscription
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($rechargeEmail: String, $rechargeSubscriptionId: ID, $reason: String!, $comments: String, $sendEmail: Boolean!, $permanent: Boolean) {
+  cancelSubscription(rechargeEmail: $rechargeEmail, rechargeSubscriptionId: $rechargeSubscriptionId, reason: $reason, comments: $comments, sendEmail: $sendEmail, permanent: $permanent) {
+  subscriptionCancelled
+  message
+  }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "rechargeEmail": "someone@mysutro.com",
+    "reason": "Because",
+    "comments": "Ya know!",
+    "sendEmail": false,
+    "permanent": true,
+    "rechargeSubscriptionId": "12345"
+  }
+  ```
+  """
+  cancelSubscription(comments: String, permanent: Boolean, reason: String!, rechargeEmail: String!, rechargeSubscriptionId: ID, sendEmail: Boolean!): CancelSubscriptionResult
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ✅ `Diag Tool` ❌
+  
+  Analyze a reading given at least the pH, chlorine, and alkalinity.
+  If there is no existing pool or chemical profile for this user, you must specify the pool volume and a default chemical profile will be used.
+  
+  #### Notes
+  This is a one-off reading that is not saved to the database.
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($params: AnalyzeReadingParams!) {
+  analyzeReading(params: $params) {
+      conflictWarning
+      recommendations {
+        decision
+        explanation
+        treatment
+        type
+      }
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "params": {
+      "ph": 7.5,
+      "chlorine": 1,
+      "alkalinity": 80,
+      "gallons": 10000,
+      "profileSource": "USER"
+    }
+  }
+  ```
+  """
+  analyzeReading(params: AnalyzeReadingParams!): LatestRecommendations
+
+  """
+  ***AUTH REQUIRED***
+  `Sutro App`  ❌ `Chatbot` ❌ `Diag Tool` ✅
+  Deletes the user information
+  Example:
+  ```
+  mutation ($email: String!) {
+    deleteSutroUser(email: $email) {
+    }
+  }
+  ```
+  With Params:
+  ```
+  {
+    "email": "delete_me@email.com",
+  }
+  ```
+  """
+  deleteSutroUser(
+    """The email of the user that we want to delete."""
+    email: String!
+  ): String
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Confirms that the device has been removed from water and triggers the flush process.
+  Can be used either from the app or by CS personnel with a diagnostics token.
+  
+  #### Examples
+  
+  ```graphql
+  mutation($deviceId: Int){
+    confirmOutOfWaterAndTriggerFlush(deviceId: $deviceId)
+  }
+  ```
+  
+  with query variables:
+  
+  ```json
+  {
+    "deviceId": 1
+  }
+  ```
+  """
+  confirmOutOfWaterAndTriggerFlush(
+    """The id of the device to confirm out of water and trigger flush for"""
+    deviceId: Int!
+  ): String
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Set or change the `PoolProfile` for the `SutroUser` with the provided email address.
+  
+  #### Examples
+  
+  Set the `PoolProfile` of the `SutroUser` with email "thisisatest@testalot.com" to the profile with id "1":
+  
+  ```graphql
+  mutation ($id: ID!, $email: String!) {
+    setPoolProfile(id: $id, email: $email) {
+      id
+    }
+  }
+  ```
+  
+  with query variables:
+  
+  ```
+  {
+    "id": 1,
+    "email": "thisisatest@testalot.com"
+  }
+  ```
+  
+  Available `PoolProfiles` can be browsed with the [poolProfiles](../../operation/query/#poolprofiles) query.
+  """
+  setPoolProfile(
+    """The email address of the `SutroUser` whose `PoolProfile` should change"""
+    email: String!
+
+    """The ID of the PoolProfile to set."""
+    id: ID!
+  ): PoolProfile
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Associate a `Device` to a `Hub` and a `SutroUser`.
+  """
+  poolmasterSetup(
+    """The serial number of the `Device` to associate with the `Hub`"""
+    deviceSerialNumber: String!
+
+    """The serial number of the `Hub` to associate with the `SutroUser`"""
+    hubSerialNumber: String!
+
+    """
+    The optional `ID` of the pool to link the hub to. Defaults to the user's first pool
+    """
+    poolId: ID
+
+    """
+    The email address of the `SutroUser` to associate with the `Device` and `Hub`
+    """
+    userEmail: String!
+  ): User
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Cancel a service mode session
+  
+  #### Examples
+  
+  Cancel the latest open service session for the currently logged-in user.
+  
+  ```graphql
+  mutation(deviceId: $deviceId) {
+    cancelServiceModeSession(deviceId: $deviceId) {
+      id
+      status
+      flushRequestedAt
+      error
+      step
+    }
+  }
+  ```
+  with query variables:
+  
+  ```json
+  {
+    "deviceId": 1
+  }
+  ```
+  """
+  cancelServiceModeSession(
+    """The id of the Device for which service mode should be cancelled"""
+    deviceId: Int
+  ): ServiceSession
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ❌ `Chatbot` ❌ `Diag Tool` ✅
+  
+  Notify a specific user or users
+  
+  #### Examples
+  
+  ```graphql
+  mutation ($params: SendNotificationParams!) {
+    sendNotification(params: $params) {
+      results {
+        sentToUser
+        success
+        message
+      }
+    }
+  }
+  ```
+  
+  To send a push notification:
+  
+  ```json
+  {
+    "params":{
+       "deviceSerials":[
+          "1234:5678:abcd:dcba",
+          "9876:asdf:ghjk:haha"
+       ],
+       "userEmails":[
+          "user@email.com",
+          "cats@dogs.com"
+       ],
+       "notificationType":"PUSH",
+       "title":"Free Protein Shakes!",
+       "body":"Do not drink them"
+    }
+  }
+  ```
+  
+  To send a data message:
+  
+  ```json
+  {
+    "params": {
+      "deviceSerials": ["1234:5678:abcd:dcba", "9876:asdf:ghjk:haha"],
+      "userEmails": ["user@email.com", "cats@dogs.com"],
+      "notificationType": "DATA",
+      "dataMessageType": "ANY_TYPE",
+      "dataMessagePayload": "SOMETHING"
+    }
+  }
+  ```
+  """
+  sendNotification(
+    """Send a notification to the owners of these devices"""
+    params: SendNotificationParams!
+  ): SendNotificationResult
+
+  """
+  ***AUTH REQUIRED***
+  
+  `Sutro App` ✅ `Chatbot` ❌ `Diag Tool` ❌
+  
+  Deletes the target webhook listener so that it no longer receives new readings
+  
+  #### Example
+  
+  ```graphql
+  mutation($listenerId: Int!) {
+      deleteWebhookListener(listenerId: $listenerId) {
+        webhookUrl
+        bearerToken
+        eventType
+        device {
+            serialNumber
+          }
+      }
+  }
+  ```
+  """
+  deleteWebhookListener(
+    """The id of the listener to be deleted"""
+    listenerId: Int!
+  ): WebhookListener
+}
+
+"""An object that displays notifications sent to a `SutroUser`"""
+type NotificationHistoryType {
+  id: ID!
+  insertedAt: DateTime
+
+  """Whether or not the notification has been deleted"""
+  isDeleted: Boolean
+
+  """Whether or not the notification has been read"""
+  isRead: Boolean
+
+  """The notification that was sent"""
+  notification: SentNotificationType
+
+  """
+  The email address belonging to the token of the entity that triggered the notification
+  """
+  triggerTokenEmail: String
+
+  """The `SutroUser` this notification was sent to"""
+  user: User
+}
+
+type DeviceSettings {
+  """
+  When the user would like to be notified that their hardware has gone offline
+  """
+  notificationsOfflineType: NotificationsOfflineType
+}
+
+"""Types of problem a `Recommendation` can be for"""
+enum RecommendationType {
+  ALKALINITY
+  CHLORINE
+  PH
+}
+
+type SetupCustomerSubscriptionResult {
+  message: String!
+  rechargeSubscriptionId: Int
+  subscriptionCreated: Boolean!
+}
+
+type DevicesAndHubsLists {
+  devices: [Device]
+  hubs: [Hub]
+}
+
+type ConvertedAmount {
+  """
+  Example: 7 cups and 3 tablespoons. 3 tablespoons would be the fractional part. Always empty for metric units.
+  """
+  fractionalPart: ConvertedAmountPart
+
+  """Example: 7 cups and 3 tablespoons. 7 cups would be the whole part."""
+  wholePart: ConvertedAmountPart
+}
+
+"Input params expected for the zendeskNotification mutation\n"
+input ZendeskNotificationParams {
+  """The id of the ticket"""
+  ticketId: ID
+
+  """The latest comment on the ticket"""
+  ticketLatestComment: String
+
+  """The title of the ticket"""
+  ticketTitle: String
+
+  """The link to the ticket url"""
+  ticketUrl: String
+
+  """Send a notification to these user"""
+  userEmail: String
+}
+
+"""
+An object showing how much of a certain chemical has been used in a certain time frame
+"""
+type ChemicalUsed {
+  """The amount of the given chemical that was used"""
+  amount: Amount
+  chemical: Chemical
+}
+
+"A representation of a specific `MonitorFirmware` or `HubFirmware` version that has been successfully uploaded to Amazon S3 and may be used to create `FirmwareRelease`s\n"
+type Firmware {
+  """The original file name uploaded for this version of the firmware"""
+  fileName: String!
+
+  """
+  The version number exactly as it should appear in the response to a `sysInfo` command
+  """
+  firmwareVersion: String!
+  id: ID!
+
+  """
+  The corresponding, unique file name uploaded to Amazon S3 for this version of the firmware
+  """
+  s3FileName: String!
+}
+
+"""
+A response containing a token that can only be used to register a webhook listener
+"""
+type WebhookTokenResult {
+  """The generated webhook registration token"""
+  token: String!
+}
+
+"An object containing information about SutroAI's analysis for alkalinity, chlorine, and ph.\n"
+type RawAnalysisResult {
+  """SutroAI's verdict on the alkalinity of this reading."""
+  alkalinity: RawAnalysisMetricResult
+
+  """SutroAI's verdict on the chlorine of this reading."""
+  chlorine: RawAnalysisMetricResult
+
+  """SutroAI's verdict on the ph of this reading."""
+  ph: RawAnalysisMetricResult
+}
+
+"""An object showing the content of a sent data message"""
+type SentDataMessageType {
+  id: ID!
+  payload: String
+  type: String
+}
+
+"Input params expected for the sendNotification mutation\n"
+input SendNotificationParams {
+  """[Push Notification Only] The body of the push notification"""
+  body: String
+
+  """[Data Message Only] The `payload` parameter of the data message"""
+  dataMessagePayload: String
+
+  """[Data Message Only] The `type` parameter of the data message"""
+  dataMessageType: String
+
+  """Send a notification to the owners of these devices"""
+  deviceSerials: [String]
+
+  """Which type of notification to send to the users' devices"""
+  notificationType: NotificationType!
+
+  """
+  Specify this to get the users by their Recharge emails instead of their Sutro emails
+  """
+  rechargeUserEmails: [String]
+
+  """[Push Notification Only] The title of the push notification"""
+  title: String
+
+  """Send a notification to these users"""
+  userEmails: [String]
+}
+
+type ResetResult {
+  success: Boolean!
+  token: String!
+  user: User
+}
+
+"The result of the `history` query\n"
+type HistoryResult {
+  historicalBatteryLevels: [HistoricalBatteryLevel]
+  historicalCartridgeCounts: [HistoricalCartridgeCount]
+  historicalTemperatures: [HistoricalTemperature]
+}
+
+"""A representation of a home"""
+type HomeObject {
+  """The addresses associated with this home"""
+  addresses: [Address]
+  id: ID
+  image: String
+  isPrimary: Boolean!
+  name: String
+
+  """The pools associated with this home."""
+  pools: [Pool]
+
+  """The user this home belongs to"""
+  user: User
+}
+
+"""
+A description of a chemical product in the database that can be used for recommendations
+"""
+type Chemical {
+  """The behaviour of this `Chemical`"""
+  behaviour: String!
+
+  """A flag that indicates if this chemical is a generic one"""
+  generic: Boolean!
+  id: ID!
+
+  """An image for the `Chemical`, if one could be found"""
+  image: String
+
+  """The company that makes this `Chemical`"""
+  manufacturer: String
+
+  """A human-readable/display name for this `Chemical`"""
+  name: String!
+
+  """The typical package size for this `Chemical`, if it is known"""
+  packageSize: String
+
+  """The typical package size unit for this `Chemical`, if it is known"""
+  packageSizeUnit: String
+
+  """
+  [DEPRECATED] The original, single `ChemicalProfile` bucket this `Chemical` should belong to. Replaced by `types` field since `Chemical`s can now belong to multiple buckets.
+  """
+  type: String! @deprecated(reason: "This field is deprecated. Please use `types` instead.")
+
+  """A list of `ChemicalProfile` buckets this `Chemical` can belong to."""
+  types: [ChemicalType]!
+
+  """
+  The unique UPC/barcode string for this `Chemical`. There are [many forms](https://www.tec-it.com/en/support/knowbase/barcode-overview/linear/Default.aspx) of UPC/barcode, but the most common are **UPC-A**, **UPC-E**, and **EAN13**.
+  """
+  upc: String!
+}
+
+"DEPRECATION NOTE: `SingleReadingProblem`s have been replaced with `Recommendation`s.\n\nA result of analyzing a `PoolReading` that describes a chemical imbalance issue identified with one of the `PoolReading`'s values and treatments that the user should apply to remedy it, based on qualities of their `Pool` and the `ChemicalProfile` they have configured.\n\nThe analysis is computed and formatted on the server by the `SutroAI` module.\n"
+type SingleReadingProblem {
+  """
+  A UTC timestamp which, if present, indicates the user has completed the `treatments` advised by this `SingleReadingProblem`. See [setProblemCompletion](../../mutation/setproblemcompletion) mutation.
+  """
+  completedAt: DateTime
+
+  """A user-friendly summary of the problem identified."""
+  description: String!
+
+  """
+  A user-friendly explanation of how the treatments will benefit their pool.
+  """
+  reason: String!
+
+  """
+  An ordered series of user-friendly recommended treatment steps the user should take to fix this `SingleReadingProblem`
+  """
+  treatments: [String]!
+}
+
+"The result of the queries that get test times\n"
+type TestTimesResponse {
+  hours: [Int]
+  status: IntervalStatus
+}
+
+"""
+The `Naive DateTime` scalar type represents a naive date and time without
+timezone. The DateTime appears in a JSON response as an ISO8601 formatted
+string.
+"""
+scalar NaiveDateTime
+
+"""
+Input parameters type expected for the setupCustomerSubscription mutation
+"""
+input SetupCustomerSubscriptionParams {
+  """Example: 5522 Pine Street"""
+  address1: String!
+  city: String!
+
+  """Example: 'United States'"""
+  country: String!
+
+  """Example: 'US' means United States"""
+  countryCode: String!
+
+  """The unique identifier of the device associated with this subscription."""
+  deviceId: Int!
+
+  """The email address of the customer"""
+  email: String!
+
+  """
+  The ecommerce external variant id of the subscription the user will have, corresponding to the variant id on Shopify.
+  """
+  externalVariantId: String!
+
+  """The first name of the customer"""
+  firstName: String!
+
+  """The last name of the customer"""
+  lastName: String!
+  phone: String!
+  province: String!
+
+  """Example: 'FL' means Florida"""
+  provinceCode: String!
+  zip: String!
+}
+
+type GenericResult {
+  message: String!
+  success: Boolean!
+}
+
+"""Represents an `EquipmentProfile`"""
+type EquipmentProfile {
+  filterType: FilterType
+  hasHeater: Boolean
+  hasLights: Boolean
+  hasSunCover: Boolean
+  hasWaterfall: Boolean
+  hasWinterCover: Boolean
+  id: ID!
+  insertedAt: DateTime
+  interior: Boolean
+  linerType: LinerType
+  poolType: PoolPlacementType
+  updatedAt: DateTime
+  waterSource: WaterSource
+}
+
+"The response type of the [sanitizers](../../operation/query/#sanitizers) query\n"
+type SanitizerResponse {
+  """
+  The default `PoolProfileSanitizer` for this `PoolType`, since a `PoolProfileSanitizer` is required
+  """
+  default: PoolProfileSanitizer!
+
+  """List of all available `PoolProfileOption`s for this `PoolType`"""
+  options: [OptionalSanitizer]!
+
+  """List of all available `PoolProfileSanitizer`s for this `PoolType`"""
+  sanitizers: [Sanitizer]!
+}
+
+enum MesSearchFieldType {
+  CARTOON_SN
+  DEVICE_ID
+  DEVICE_SN
+  HUB_ID
+  HUB_SN
+  MO_NAME
+  PSN
+  SIM
+  WIFI_MAC
+}
+
+"""The valid user groups notifications can be multicasted to"""
+enum MulticastUserGroup {
+  """Supplied to send a notification to all users"""
+  ALL
+
+  """
+  Supplied to send a notification to users who have not received a device message in 65 minutes. Pass a custom number of minutes using the `inactiveMinutes` parameter
+  """
+  DEVICE_INACTIVE
+
+  """
+  Supplied to send a notification to users who have not received a hub message in 65 minutes. Pass a custom number of minutes using the `inactiveMinutes` parameter
+  """
+  HUB_INACTIVE
+}
+
+"""Assignable chemical types"""
+enum AssignableChemicalType {
+  ALKALINITY_UP
+  PH_DOWN
+  PH_UP
+  PRIMARY_SANITIZER
+  SECONDARY_SANITIZER
+}
+
+"""Input parameters for setupCustomerPaymentAndShipments"""
+input SetupCustomerPaymentAndShipmentsParams {
+  """The email address of the customer"""
+  email: String!
+  paymentType: String!
+
+  """The Stripe `cus_` token for the user"""
+  processorCustomerToken: String!
+
+  """The Stripe `pm_` token for the payment method"""
+  processorPaymentMethodToken: String!
+  rechargeCustomerId: String!
+}
+
+"""Available groups to create `FirmwareRelease`s for"""
+enum ReleaseGroupType {
+  CABANA_CLUB
+  GRIO
+  PRODUCTION
+  SUTRO
+  VIP
+}
+
+"""The response to the getHubAuth mutation"""
+type HubAuth {
+  """A JWT token that expires in an hour, used to register a `Hub`"""
+  token: String!
+}
+
+"""Valid filter types"""
+enum FilterType {
+  ---
+  CARTRIDGE
+  DIATOMACEOUS_EARTH
+  SAND
+}
+
+"""
+The `DateTime` scalar type represents a date and time in the UTC
+timezone. The DateTime appears in a JSON response as an ISO8601 formatted
+string, including UTC timezone ("Z"). The parsed date and time string will
+be converted to UTC and any UTC offset other than 0 will be rejected.
+"""
+scalar DateTime
+
+type Settings {
+  """The configured language for this user"""
+  language: Language!
+
+  """Which tweaks to business logic we do for this user"""
+  logicModifiers: [LogicModifier]
+
+  """The configured measurement system for this user"""
+  measurementSystem: MeasurementSystem!
+
+  """
+  When the user would like to be notified that their hardware has gone offline
+  """
+  notificationsOfflineType: NotificationsOfflineType
+
+  """
+  How frequently the user would like to receive notifications about their readings
+  """
+  notificationsReadingFrequency: NotificationsReadingFrequency
+
+  """
+  Which sorts of readings the user would like to receive notifications about
+  """
+  notificationsReadingType: NotificationsReadingType
+}
+
+"A specification for a pair of `MonitorFirmware` and `HubFirmware` versions to roll out to a group of `Hub`s and `Device`s\n"
+type FirmwareRelease {
+  """The `HubFirmware` associated with this release"""
+  hubRelease: Firmware
+  id: ID!
+
+  """Whether or not this release should perform the monitor OTA first"""
+  monitorFirst: Boolean!
+
+  """The `MonitorFirmware` associated with this release"""
+  monitorRelease: Firmware
+
+  """The name of the release group that this release is intended for"""
+  releaseGroup: ReleaseGroupType!
+}
+
+"The response to the [historical readings](../object/pool/#historicalreadings) query for a user's `PoolReading` history\n"
+type ReadingHistoryResult {
+  """
+  The number of non-duplicate `PoolReading`s available over the past 30 days
+  """
+  count: Int!
+
+  """The `PoolReading`s, sorted from newest to oldest"""
+  readings: [PoolReading]!
+}
+
+"""
+A response for some mutations that simply indicates if the mutation succeeded or failed
+"""
+type StatusResult {
+  success: Boolean!
+}
+
+enum ToggleReadingTypes {
+  PAUSE
+  RESUME
+}
+
+"""
+Different tweaks to business logic we can activate to enhance user experience or avoid problems
+"""
+enum LogicModifier {
+  """
+  When this modifier is present, we will use the old pH curve equation to calculate pH for this user
+  """
+  PH_OLD_EQUATION
+}
+
+type CancelSubscriptionResult {
+  message: String!
+  subscriptionCancelled: Boolean!
+}
+
+"A representation of state for a `ServiceSession` of a `Device`\n"
+type ServiceSession {
+  """
+  A string code indicating any error that would cause the `ServiceSession` to exit early
+  """
+  error: String
+
+  """
+  The UTC timestamp indicating when the server requested a short flush by the `Device`, if such a flush has been requested
+  """
+  flushRequestedAt: DateTime
+  id: ID!
+  insertedAt: DateTime
+  latestReadinessCheck: ReadinessCheckSession
+  readinessCheckFailures: Int
+  screwRetractedAt: DateTime
+
+  """The overall status for this `ServiceSession`"""
+  status: String
+
+  """The current step of this `ServiceSession`"""
+  step: ServiceModeStep!
+
+  """The current type of this `ServiceSession`"""
+  type: ServiceModeType!
+}
+
+"""A representation of a manual reading"""
+type ManualReading {
+  """The device this manual reading was triggered for"""
+  device: Device
+  flushRequestedAt: DateTime
+  id: ID
+  readingAckedAt: DateTime
+  status: ManualReadingStatus
+  type: String
+}
+
+type PoolStoreType {
+  id: ID
+  name: String
+}
+
+"Represents a hub and device pair.\n"
+type HardwareObject {
+  """The id for this `SutroUser`'s `Device`"""
+  deviceId: ID
+
+  """The unique serial number for this `SutroUser`'s `Device`"""
+  deviceSerial: String
+
+  """The unique serial number for this `SutroUser`'s `Hub`"""
+  hubSerial: String
+
+  """The MES data associated with the given user"""
+  mesData: MesData
+
+  """The id for this `SutroUser`'s `Pool`"""
+  poolId: ID
+
+  """
+  The name of the release group that this `SutroUser`s hardware is part of
+  """
+  releaseGroup: ReleaseGroupType
+  subscriptionClass: SubscriptionClass
+}
+
+"## DEPRECATION NOTE: `addChemical` is no longer supported.\n\nResponse form of the [addChemical](../../mutation/addChemical) mutation.\n"
+type AddChemicalResponse {
+  """The `Chemical` that was added."""
+  chemical: Chemical!
+
+  """
+  The result of trying to add the `Chemical` to the current user's `ChemicalProfile`. "OK" indicates a success, anything else indicates a reason for failure.
+  """
+  result: AssignChemicalResult!
+}
+
+"A display type for a `PoolProfileOption`\n"
+type OptionalSanitizer {
+  """The display string for clients to use"""
+  name: String!
+  value: PoolProfileOption!
+}
